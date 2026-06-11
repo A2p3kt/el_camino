@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Camino - La Rabida</title>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    >
+    <style>
+        :root {
+            --parchment: #f4ebd8;
+            --vintage-green: #3d5a40;
+            --text-dark: #2c2c2c;
+            --modal-bg: rgba(255, 255, 255, 0.96);
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Georgia, serif;
+            background-color: var(--parchment);
+            color: var(--text-dark);
+            overflow: hidden;
+        }
+
+        #welcome-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(244, 235, 216, 0.55), rgba(244, 235, 216, 0.55)), url('images/IMG-20260609-WA0132.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease-out;
+            text-align: center;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        #welcome-screen h1 {
+            font-size: 3.2rem;
+            color: var(--vintage-green);
+            margin: 0 0 12px;
+        }
+
+        #welcome-screen p {
+            font-size: 1.15rem;
+            margin: 0 0 28px;
+            max-width: 680px;
+        }
+
+        #start-btn {
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            background-color: var(--vintage-green);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #start-btn:hover {
+            background-color: #2b402d;
+        }
+
+        #map-container {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #map-hint {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            z-index: 500;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+            font-size: 0.95rem;
+        }
+
+        #info-modal {
+            position: absolute;
+            left: 50%;
+            bottom: -320px;
+            transform: translateX(-50%);
+            width: min(92%, 520px);
+            background: var(--modal-bg);
+            border-radius: 18px 18px 0 0;
+            padding: 18px;
+            box-sizing: border-box;
+            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.22);
+            z-index: 600;
+            transition: bottom 0.35s ease;
+        }
+
+        #info-modal.active {
+            bottom: 0;
+        }
+
+        #modal-title {
+            margin: 0 0 8px;
+            color: var(--vintage-green);
+        }
+
+        #modal-text {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        #close-modal {
+            margin-top: 14px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 999px;
+            background: var(--vintage-green);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .landmark-label {
+            border: 0;
+            background: transparent;
+            color: #1f3522;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="welcome-screen">
+        <h1>Welcome to El Camino</h1>
+        <p>Follow the trail through the marshes of La Rabida and discover the landmarks that shaped history.</p>
+        <button id="start-btn">Start Exploring</button>
+    </div>
+
+    <div id="map-container">
+        <div id="map-hint">Select a point to reveal the landmark</div>
+        <div id="map" aria-label="La Rabida route map"></div>
+
+        <div id="info-modal">
+            <h2 id="modal-title">Landmark Name</h2>
+            <p id="modal-text">Information about this location appears here.</p>
+            <button id="close-modal" type="button">Close</button>
+        </div>
+    </div>
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const startBtn = document.getElementById('start-btn');
+            const mapContainer = document.getElementById('map-container');
+            const mapHint = document.getElementById('map-hint');
+            const infoModal = document.getElementById('info-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalText = document.getElementById('modal-text');
+            const closeModalBtn = document.getElementById('close-modal');
+
+            let map = null;
+
+            const toLatLng = (point) => {
+                if (!point || typeof point !== 'object') {
+                    return null;
+                }
+
+                const lat = Number(point.lat ?? point.latitude);
+                const lng = Number(point.lng ?? point.lon ?? point.longitude);
+
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                    return null;
+                }
+
+                return [lat, lng];
+            };
+
+            const showNodeInfo = (nodeData) => {
+                modalTitle.textContent = nodeData.title || 'Landmark';
+                modalText.textContent = nodeData.info || 'No additional information available.';
+                infoModal.classList.add('active');
+                mapHint.textContent = `Selected: ${nodeData.title || 'Landmark'}`;
+            };
+
+            const initMap = (route, nodes) => {
+                map = L.map('map', {
+                    zoomControl: true
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                const routeLatLngs = (route || []).map(toLatLng).filter(Boolean);
+                const nodeLatLngs = (nodes || [])
+                    .map((node) => ({
+                        node,
+                        latLng: toLatLng(node)
+                    }))
+                    .filter((entry) => entry.latLng);
+
+                if (routeLatLngs.length >= 2) {
+                    L.polyline(routeLatLngs, {
+                        color: '#0f7f4f',
+                        weight: 5,
+                        opacity: 0.9
+                    }).addTo(map);
+                }
+
+                nodeLatLngs.forEach(({ node, latLng }) => {
+                    const marker = L.circleMarker(latLng, {
+                        radius: 8,
+                        color: '#124f35',
+                        weight: 2,
+                        fillColor: '#28a86b',
+                        fillOpacity: 0.95
+                    }).addTo(map);
+
+                    const label = node.label ? String(node.label) : '';
+                    if (label) {
+                        marker.bindTooltip(label, {
+                            permanent: true,
+                            direction: 'top',
+                            className: 'landmark-label',
+                            offset: [0, -10]
+                        });
+                    }
+
+                    marker.on('click', () => showNodeInfo(node));
+                });
+
+                const allPoints = [...routeLatLngs, ...nodeLatLngs.map((entry) => entry.latLng)];
+                if (allPoints.length > 0) {
+                    map.fitBounds(allPoints, { padding: [40, 40] });
+                } else {
+                    map.setView([37.207, -6.94], 14);
+                    mapHint.textContent = 'No valid coordinates found in map-data.json';
+                }
+            };
+
+            const loadMapData = async () => {
+                try {
+                    const response = await fetch('map-data.json');
+                    if (!response.ok) {
+                        throw new Error(`Failed to load map data: ${response.status}`);
+                    }
+
+                    const mapData = await response.json();
+                    initMap(mapData.route, mapData.nodes);
+                } catch (error) {
+                    console.error(error);
+                    mapHint.textContent = 'Map data could not be loaded';
+                    modalTitle.textContent = 'Map data unavailable';
+                    modalText.textContent = 'The map or landmark points could not be loaded from map-data.json.';
+                    infoModal.classList.add('active');
+                }
+            };
+
+            loadMapData();
+
+            startBtn.addEventListener('click', () => {
+                welcomeScreen.style.opacity = '0';
+                setTimeout(() => {
+                    welcomeScreen.style.display = 'none';
+                    mapContainer.style.display = 'block';
+                    if (map) {
+                        map.invalidateSize();
+                    }
+                }, 800);
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                infoModal.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
