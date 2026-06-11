@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Camino - La Rabida</title>
+    
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""
     >
+    
     <style>
         :root {
             --parchment: #f4ebd8;
@@ -18,8 +20,7 @@
             --modal-bg: rgba(255, 255, 255, 0.96);
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -30,6 +31,7 @@
             overflow: hidden;
         }
 
+        /* --- Welcome Screen UI --- */
         #welcome-screen {
             position: absolute;
             top: 0;
@@ -77,6 +79,7 @@
             background-color: #2b402d;
         }
 
+        /* --- Map Container UI --- */
         #map-container {
             display: none;
             position: relative;
@@ -101,6 +104,7 @@
             font-size: 0.95rem;
         }
 
+        /* --- Modal UI --- */
         #info-modal {
             position: absolute;
             left: 50%;
@@ -148,6 +152,54 @@
             font-size: 0.95rem;
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
+
+        /* --- Custom App-Style Map Pins --- */
+        .app-style-pin {
+            position: relative;
+            width: 50px; 
+            height: 50px;
+            overflow: visible !important; 
+        }
+
+        .app-style-pin .pin-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+            background-color: #fff;
+            position: relative;
+            z-index: 2;
+        }
+
+        .app-style-pin::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 12px 10px 0;
+            border-style: solid;
+            border-color: #ffffff transparent transparent transparent;
+            z-index: 1;
+            filter: drop-shadow(0 3px 2px rgba(0,0,0,0.2));
+        }
+        
+        .leaflet-tooltip.app-style-tooltip {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            color: #333;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 4px 12px;
+        }
+        
+        .leaflet-tooltip.app-style-tooltip::before {
+            display: none; 
+        }
     </style>
 </head>
 <body>
@@ -173,6 +225,7 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""
     ></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const welcomeScreen = document.getElementById('welcome-screen');
@@ -186,55 +239,73 @@
 
             let map = null;
 
-            const toLatLng = (point) => {
-                if (!point || typeof point !== 'object') {
-                    return null;
-                }
+            // --- IMAGE DICTIONARY FOR LANDMARKS ---
+            const landmarkImages = {
+                "lm-1": "images/landmarks-images/maxi-lecture-hall.png",
+                "lm-2": "images/landmarks-images/monastery.png",
+                "lm-3": "images/landmarks-images/amphitheater.png",
+                "lm-4": "images/landmarks-images/unia.png",
+                "lm-5": "images/landmarks-images/carabelas.png",
+                "lm-6": "images/landmarks-images/plus-ultra.png",
+                "lm-7": "images/landmarks-images/monumento-descubridores.png"
+            };
 
+            const toLatLng = (point) => {
+                if (!point || typeof point !== 'object') return null;
                 const lat = Number(point.lat ?? point.latitude);
                 const lng = Number(point.lng ?? point.lon ?? point.longitude);
-
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                    return null;
-                }
-
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
                 return [lat, lng];
             };
 
             const showNodeInfo = (nodeData) => {
-                modalTitle.textContent = nodeData.title || 'Landmark';
+                modalTitle.textContent = nodeData.title || nodeData.name || 'Landmark';
                 modalText.textContent = nodeData.info || 'No additional information available.';
                 infoModal.classList.add('active');
-                mapHint.textContent = `Selected: ${nodeData.title || 'Landmark'}`;
+                mapHint.textContent = `Selected: ${nodeData.title || nodeData.name || 'Landmark'}`;
             };
 
             const initMap = (route, nodes, landmarks) => {
-                map = L.map('map', {
-                    zoomControl: true
-                });
+                map = L.map('map', { zoomControl: true });
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
 
-                // Draw Red Landmarks
+                // --- 1. Draw Custom App-Style Image Landmarks ---
+                // --- 1. Draw Custom App-Style Image Landmarks ---
                 if (landmarks && landmarks.length > 0) {
                     landmarks.forEach(lm => {
                         const latLng = toLatLng(lm);
                         if (latLng) {
-                            L.circle(latLng, {
-                                color: '#8b0000',
-                                fillColor: '#cc0000',
-                                fillOpacity: 0.35,
-                                radius: lm.radius || 50,
-                                weight: 1
-                            }).addTo(map).bindTooltip(lm.name, { permanent: false });
+                            const iconUrl = landmarkImages[lm.id] || 'images/default-icon.png';
+
+                            const customLandmarkIcon = L.divIcon({
+                                className: 'app-style-pin',
+                                // FIX 1: Removed the alt="${lm.name}" so broken images don't print text inside the circle
+                                html: `<img class="pin-img" src="${iconUrl}" alt="">`,
+                                iconSize: [50, 50],
+                                iconAnchor: [25, 62],
+                                tooltipAnchor: [0, -55]
+                            });
+
+                            const marker = L.marker(latLng, { 
+                                icon: customLandmarkIcon 
+                            }).addTo(map);
+
+                            marker.bindTooltip(lm.name, {
+                                // FIX 2: Set to false! Now the name only appears cleanly when you hover over the pin.
+                                permanent: false, 
+                                direction: 'top',
+                                className: 'app-style-tooltip',
+                                offset: [0, -5]
+                            });
                         }
                     });
                 }
 
-                // Draw Green Route
+                // --- 2. Draw Green Route Line ---
                 const routeLatLngs = (route || []).map(toLatLng).filter(Boolean);
                 if (routeLatLngs.length >= 2) {
                     L.polyline(routeLatLngs, {
@@ -244,7 +315,7 @@
                     }).addTo(map);
                 }
 
-                // Draw Green Stops (Nodes)
+                // --- 3. Draw Green Route Stops (Nodes) ---
                 const nodeLatLngs = (nodes || [])
                     .map((node) => ({ node, latLng: toLatLng(node) }))
                     .filter((entry) => entry.latLng);
@@ -271,7 +342,7 @@
                     marker.on('click', () => showNodeInfo(node));
                 });
 
-                // Fit map bounds to include route, nodes, and landmarks
+                // Fit map bounds to include everything
                 let allPoints = [...routeLatLngs, ...nodeLatLngs.map((entry) => entry.latLng)];
                 if (landmarks && landmarks.length > 0) {
                     allPoints = [...allPoints, ...landmarks.map(toLatLng).filter(Boolean)];
@@ -303,16 +374,12 @@
                 }
             };
 
-            loadMapData();
-
             startBtn.addEventListener('click', () => {
                 welcomeScreen.style.opacity = '0';
                 setTimeout(() => {
                     welcomeScreen.style.display = 'none';
                     mapContainer.style.display = 'block';
-                    if (map) {
-                        map.invalidateSize();
-                    }
+                    loadMapData(); 
                 }, 800);
             });
 
