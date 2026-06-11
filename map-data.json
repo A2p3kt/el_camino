@@ -1,58 +1,134 @@
 {
   "route": [
-    { "lat": 37.200864, "lng": -6.924522 },
-    { "lat": 37.205217, "lng": -6.930372 },
-    { "lat": 37.205094, "lng": -6.931164 },
-    { "lat": 37.205217, "lng": -6.930372 },
-    { "lat": 37.206458, "lng": -6.931342 },
-    { "lat": 37.207269, "lng": -6.932331 },
-    { "lat": 37.208944, "lng": -6.930386 },
-    { "lat": 37.210575, "lng": -6.929539 },
-    { "lat": 37.208944, "lng": -6.930386 },
-    { "lat": 37.203228, "lng": -6.925839 },
-    { "lat": 37.200864, "lng": -6.924522 }
+    [37.200864, -6.924522],
+    [37.205217, -6.930372],
+    [37.205094, -6.931164],
+    [37.205217, -6.930372],
+    [37.206458, -6.931342],
+    [37.207269, -6.932331],
+    [37.208944, -6.930386],
+    [37.210575, -6.929539],
+    [37.208944, -6.930386],
+    [37.203228, -6.925839],
+    [37.200864, -6.924522]
   ],
-  "nodes": [
+  "landmarks": [
+    {
+      "id": "lm-1",
+      "lat": 37.201467,
+      "lng": -6.919806,
+      "name": "1. Maxi-Lecture Hall",
+      "radius": 140,
+      "img": "images/landmarks-images/maxi-lecture-hall.png",
+      "desc": "The central lecture hall for the Huelva Campus, serving as a hub for academic gatherings."
+    },
+    {
+      "id": "lm-2",
+      "lat": 37.20756,
+      "lng": -6.92614,
+      "name": "2. Monastery of La Rábida",
+      "radius": 45,
+      "img": "images/landmarks-images/monastery.png",
+      "desc": "A historic Franciscan monastery deeply connected to the voyages of Christopher Columbus."
+    },
+    {
+      "id": "lm-3",
+      "lat": 37.20966,
+      "lng": -6.92589,
+      "name": "3. Amphitheater",
+      "radius": 60,
+      "img": "images/landmarks-images/amphitheater.png",
+      "desc": "An open-air venue designed for local events and cultural presentations."
+    },
+    {
+      "id": "lm-4",
+      "lat": 37.20859,
+      "lng": -6.92246,
+      "name": "4. UNIA",
+      "radius": 90,
+      "img": "images/landmarks-images/unia.png",
+      "desc": "The Universidad Internacional de Andalucía campus, characterized by its distinct modern and regional architecture."
+    },
+    {
+      "id": "lm-5",
+      "lat": 37.21123,
+      "lng": -6.92782,
+      "name": "5. Carabelas",
+      "radius": 55,
+      "img": "images/landmarks-images/carabelas.png",
+      "desc": "The docking site of the replica ships from the 1492 expedition."
+    },
+    {
+      "id": "lm-6",
+      "lat": 37.21055,
+      "lng": -6.92941,
+      "name": "6. Monument of Plus Ultra",
+      "radius": 40,
+      "img": "images/landmarks-images/plus-ultra.png",
+      "desc": "A tribute to the transatlantic flight of the Plus Ultra seaplane."
+    },
+    {
+      "id": "lm-7",
+      "lat": 37.207644,
+      "lng": -6.923894,
+      "name": "7. Monumento a los Descubridores",
+      "radius": 50,
+      "img": "images/landmarks-images/monumento-descubridores.png",
+      "desc": "A towering monument commemorating the explorers of the Americas."
+    }
+  ],
+  "stops": [
     {
       "id": "stop-1",
-      "label": "1",
+      "name": "Start of the Path",
       "lat": 37.200864,
       "lng": -6.924522,
-      "title": "Start of the Path",
-      "info": "Looking north-west from here, you can see the Maxi-Lecture Hall of the Huelva Campus."
+      "img": "images/landmarks-images/maxi-lecture-hall.png",
+      "desc": "Looking northeast from here, you can see the <span class='monument-link' onclick='triggerLocation(\"lm-1\")'>Maxi-Lecture Hall</span> of the Huelva Campus in the distance.",
+      "viewCone": [
+        [37.200864, -6.924522],
+        [37.2025, -6.920],
+        [37.2005, -6.919]
+      ]
     },
     {
       "id": "stop-2",
-      "label": "2",
+      "name": "Estero de Domingo Rubio",
       "lat": 37.205033,
       "lng": -6.931289,
-      "title": "Estero de Domingo Rubio",
-      "info": "Deep in the marshland. Looking west provides a wide view of the UNIA campus."
+      "img": "images/landmarks-images/unia.png",
+      "desc": "Deep in the marshland. Looking east provides a wide view of the <span class='monument-link' onclick='triggerLocation(\"lm-4\")'>UNIA</span> campus grounds across the water.",
+      "viewCone": [
+        [37.205033, -6.931289],
+        [37.209, -6.924],
+        [37.207, -6.922]
+      ]
     },
     {
       "id": "stop-3",
-      "label": "3",
+      "name": "Amphitheater Viewpoint",
       "lat": 37.208944,
       "lng": -6.930386,
-      "title": "Amphitheater Viewpoint",
-      "info": "Looking straight across the terrain to the west reveals the Amphitheater and Monastery."
+      "img": "images/landmarks-images/amphitheater.png",
+      "desc": "Looking straight across the terrain to the east reveals both the <span class='monument-link' onclick='triggerLocation(\"lm-3\")'>Amphitheater</span> and the historic <span class='monument-link' onclick='triggerLocation(\"lm-2\")'>Monastery of La Rábida</span>.",
+      "viewCone": [
+        [37.208944, -6.930386],
+        [37.2105, -6.925],
+        [37.2065, -6.925]
+      ]
     },
     {
       "id": "stop-4",
-      "label": "4",
+      "name": "Southern Edge",
       "lat": 37.210575,
       "lng": -6.929539,
-      "title": "Southern Edge",
-      "info": "The path turns back inland, approaching the historic southern sector."
+      "img": "images/landmarks-images/plus-ultra.png",
+      "desc": "The path turns back inland, approaching the historic southern sector where you can clearly see the <span class='monument-link' onclick='triggerLocation(\"lm-6\")'>Monument of Plus Ultra</span>.",
+      "viewCone": [
+        [37.210575, -6.929539],
+        [37.212, -6.927],
+        [37.209, -6.928]
+      ]
     }
-  ],
-  "landmarks": [
-  { "id": "lm-1", "lat": 37.201467, "lng": -6.919806, "name": "1. Maxi-Lecture Hall", "radius": 140 },
-  { "id": "lm-2", "lat": 37.20756, "lng": -6.92614, "name": "2. Monastery of La Rábida", "radius": 45 },
-  { "id": "lm-3", "lat": 37.20966, "lng": -6.92589, "name": "3. Amphitheater", "radius": 60 },
-  { "id": "lm-4", "lat": 37.20859, "lng": -6.92246, "name": "4. UNIA", "radius": 90 },
-  { "id": "lm-5", "lat": 37.21123, "lng": -6.92782, "name": "5. Carabelas", "radius": 55 },
-  { "id": "lm-6", "lat": 37.21055, "lng": -6.92941, "name": "6. Monument of Plus Ultra", "radius": 40 },
-  { "id": "lm-7", "lat": 37.207644, "lng": -6.923894, "name": "7. Monumento a los Descubridores", "radius": 50 }
-]
+  ]
 }
