@@ -144,7 +144,6 @@
             cursor: pointer;
         }
 
-        /* Adjusted for satellite visibility */
         .landmark-label {
             border: 0;
             background: transparent;
@@ -200,6 +199,10 @@
         
         .leaflet-tooltip.app-style-tooltip::before {
             display: none; 
+        }
+
+        .clickable-zone {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -269,29 +272,41 @@
             const initMap = (route, nodes, landmarks) => {
                 map = L.map('map', { zoomControl: true });
 
-                // Satellite imagery tile layer
+                // Satellite imagery
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                     maxZoom: 19,
                     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
                 }).addTo(map);
 
-                // --- 1. Draw Custom App-Style Image Landmarks ---
-                // --- 1. Draw Custom App-Style Image Landmarks ---
+                // --- PROGRESSIVE DISCLOSURE SETUP (SPOTLIGHT EFFECT) ---
+                const ZOOM_THRESHOLD = 16;
+                const landmarkMarkers = {}; // A dictionary to store our photo pins
+
+                // --- 1. Draw Landmarks ---
                 if (landmarks && landmarks.length > 0) {
                     landmarks.forEach(lm => {
                         const latLng = toLatLng(lm);
                         if (latLng) {
                             
-                            // NEW: Draw the red circle area FIRST so it sits behind the pin
-                            L.circle(latLng, {
+                            // A. Draw the Red Area (Always visible)
+                            const circleArea = L.circle(latLng, {
                                 color: '#8b0000',
                                 fillColor: '#cc0000',
                                 fillOpacity: 0.35,
-                                radius: lm.radius || 50, // Uses the radius from your JSON
-                                weight: 1
+                                radius: lm.radius || 50, 
+                                weight: 1,
+                                className: 'clickable-zone'
                             }).addTo(map);
 
-                            // Existing: Draw the custom photo pin on top
+                            // B. Zoom interaction
+                            circleArea.on('click', () => {
+                                map.flyTo(latLng, ZOOM_THRESHOLD, {
+                                    animate: true,
+                                    duration: 0.8
+                                });
+                            });
+
+                            // C. Build the custom photo pin (but do NOT add to map yet)
                             const iconUrl = landmarkImages[lm.id] || 'images/default-icon.png';
                             const customLandmarkIcon = L.divIcon({
                                 className: 'app-style-pin',
@@ -303,15 +318,20 @@
 
                             const marker = L.marker(latLng, { 
                                 icon: customLandmarkIcon 
-                            }).addTo(map);
+                            });
 
                             marker.bindTooltip(lm.name, {
-                                // FIX 2: Set to false! Now the name only appears cleanly when you hover over the pin.
                                 permanent: false, 
                                 direction: 'top',
                                 className: 'app-style-tooltip',
                                 offset: [0, -5]
                             });
+
+                            // Store it in our dictionary with its coordinates for distance checking
+                            landmarkMarkers[lm.id] = { 
+                                marker: marker, 
+                                latLngObj: L.latLng(latLng) 
+                            };
                         }
                     });
                 }
@@ -353,18 +373,48 @@
                     marker.on('click', () => showNodeInfo(node));
                 });
 
-                // Fit map bounds to include everything
-                let allPoints = [...routeLatLngs, ...nodeLatLngs.map((entry) => entry.latLng)];
-                if (landmarks && landmarks.length > 0) {
-                    allPoints = [...allPoints, ...landmarks.map(toLatLng).filter(Boolean)];
-                }
+                // --- 4. DEFAULT VIEW ---
+                // Guarantees all photos are hidden when the user first enters the site
+                map.setView([37.208, -6.922], 15);
 
-                if (allPoints.length > 0) {
-                    map.fitBounds(allPoints, { padding: [50, 50] });
-                } else {
-                    map.setView([37.207, -6.92], 15);
-                    mapHint.textContent = 'No valid coordinates found in map-data.json';
-                }
+                // --- 5. SMART SPOTLIGHT LOGIC ---
+                const updatePinVisibility = () => {
+                    // If we are zoomed out, hide EVERYTHING
+                    if (map.getZoom() < ZOOM_THRESHOLD) {
+                        Object.values(landmarkMarkers).forEach(item => {
+                            if (map.hasLayer(item.marker)) map.removeLayer(item.marker);
+                        });
+                        return; // Stop here
+                    }
+
+                    // If we are zoomed in, find the landmark closest to the center of the screen!
+                    const center = map.getCenter();
+                    let closestId = null;
+                    let minDistance = Infinity;
+
+                    Object.entries(landmarkMarkers).forEach(([id, item]) => {
+                        const distance = center.distanceTo(item.latLngObj);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestId = id;
+                        }
+                    });
+
+                    // Loop through the pins: Add the closest one, remove the others.
+                    Object.entries(landmarkMarkers).forEach(([id, item]) => {
+                        if (id === closestId) {
+                            if (!map.hasLayer(item.marker)) map.addLayer(item.marker);
+                        } else {
+                            if (map.hasLayer(item.marker)) map.removeLayer(item.marker);
+                        }
+                    });
+                };
+
+                // Listen to zooming AND panning to dynamically shift the spotlight
+                map.on('zoomend moveend', updatePinVisibility);
+                
+                // Do an initial check
+                setTimeout(updatePinVisibility, 100);
             };
 
             const loadMapData = async () => {
