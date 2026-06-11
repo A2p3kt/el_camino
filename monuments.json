@@ -1,0 +1,132 @@
+{
+  "lm-1": {
+    "name": "Maxi-Lecture Hall",
+    "location": "Universidad de Huelva, La Rábida",
+    "yearBuilt": "1990s",
+    "architectOrBuilder": "Universidad de Huelva",
+    "shortDescription": "The modern academic heart of the La Rábida campus.",
+    "fullDescription": "The Maxi-Lecture Hall (Aulario) is the central hub for academic gatherings at the La Rábida Campus of the University of Huelva. Nestled among pine trees and marshlands, the building represents the modern integration of higher education into a site defined by centuries of history. It serves engineering, forestry, and environmental science students.",
+    "mainImage": "images/landmarks-images/maxi-lecture-hall.png",
+    "interestingFacts": [
+      "It sits on grounds historically tied to the 1940s Hispano-American university movement.",
+      "The campus specializes in forestry and environmental engineering due to the surrounding ecosystem.",
+      "The architecture was designed to respect the height of the surrounding pine forests."
+    ],
+    "gallery": [
+      "images/landmarks-images/maxi-lecture-hall.png"
+    ]
+  },
+
+  "lm-2": {
+    "name": "Monastery of La Rábida",
+    "location": "Palos de la Frontera, Spain",
+    "yearBuilt": "14th - 15th Century",
+    "architectOrBuilder": "Franciscan Order",
+    "shortDescription": "The historic sanctuary where Christopher Columbus planned his 1492 voyage.",
+    "fullDescription": "The Monastery of Santa María de la Rábida is a Franciscan friary built in Gothic-Mudéjar style. In 1490, a discouraged Christopher Columbus arrived here seeking shelter. The resident monks, particularly Fray Juan Pérez and Fray Antonio de Marchena, championed his cause and helped him secure the crucial meeting with the Catholic Monarchs that changed world history.",
+    "mainImage": "images/landmarks-images/monastery.png",
+    "interestingFacts": [
+      "It houses the Virgen de los Milagros, an alabaster statue venerated since the 13th century.",
+      "The building survived the devastating 1755 Lisbon earthquake.",
+      "It was declared a National Monument in 1856, the third in Spain to receive the title."
+    ],
+    "gallery": [
+      "images/landmarks-images/monastery.png"
+    ]
+  },
+
+  "lm-3": {
+    "name": "Foro Iberoamericano",
+    "location": "La Rábida, Spain",
+    "yearBuilt": "1992",
+    "architectOrBuilder": "Carlos Tello & Francisco de la Maza",
+    "shortDescription": "A grand, modern amphitheater built for the 5th Centenary.",
+    "fullDescription": "Built to celebrate the 500th anniversary of the Discovery of America, the Foro Iberoamericano is a massive open-air amphitheater designed in a Greco-Roman style. Nestled into the natural slope of the landscape overlooking the Odiel river, it hosts major concerts, theatrical performances, and cultural events during the summer months.",
+    "mainImage": "images/landmarks-images/amphitheater.png",
+    "interestingFacts": [
+      "It has a seating capacity of over 4,000 spectators.",
+      "The stage area incorporates the natural landscape and river views as a backdrop.",
+      "It serves as the main venue for the 'Noches del Foro' summer concert series."
+    ],
+    "gallery": [
+      "images/landmarks-images/amphitheater.png",
+      "images/assets/foro/first.png",
+      "images/assets/foro/second.png",
+      "images/assets/foro/third.png",
+      "images/assets/foro/fourth.png",
+      "images/assets/foro/fifth.png"
+    ]
+  },
+
+  "lm-4": {
+    "name": "UNIA (Int. University of Andalusia)",
+    "location": "Sede Santa María de la Rábida",
+    "yearBuilt": "1943 (Integrated to UNIA in 1994)",
+    "architectOrBuilder": "Spanish Ministry of Education",
+    "shortDescription": "A historic international campus dedicated to Latin American relations.",
+    "fullDescription": "Originally founded in 1943 as the Hispano-American University of Santa María de la Rábida, this campus was created to foster cultural and academic ties between Spain and Latin America. Today, as part of the International University of Andalusia (UNIA), it features beautiful Andalusian architecture, lush gardens, and a stunning library.",
+    "mainImage": "images/landmarks-images/unia.png",
+    "interestingFacts": [
+      "The campus feels more like a historic Andalusian estate than a modern university.",
+      "It is globally recognized for its specialized master's programs focusing on Latin America.",
+      "The site features a highly regarded library filled with Ibero-American archives."
+    ],
+    "gallery": [
+      "images/landmarks-images/unia.png"
+    ]
+  },
+
+  "lm-5": {
+    "name": "Muelle de las Carabelas",
+    "location": "Palos de la Frontera, Spain",
+    "yearBuilt": "1994",
+    "architectOrBuilder": "Diputación de Huelva",
+    "shortDescription": "A museum featuring life-sized, sailable replicas of Columbus's three ships.",
+    "fullDescription": "The Wharf of the Caravels is a highly popular outdoor museum located along the Tinto River. It permanently houses the exact replicas of the Niña, the Pinta, and the Santa María. These replicas were built for the 1992 Universal Exposition in Seville and actually recreated Columbus's voyage by sailing to the Americas before being permanently docked here.",
+    "mainImage": "images/landmarks-images/carabelas.png",
+    "interestingFacts": [
+      "Visitors can physically board and explore the decks of all three ships.",
+      "The museum includes a recreated 15th-century medieval port town.",
+      "It is one of the most visited tourist attractions in the entire region of Andalusia."
+    ],
+    "gallery": [
+      "images/landmarks-images/carabelas.png"
+    ]
+  },
+
+  "lm-6": {
+    "name": "Monument of Plus Ultra",
+    "location": "La Rábida, Spain",
+    "yearBuilt": "1926",
+    "architectOrBuilder": "Donated by Argentina",
+    "shortDescription": "Commemorating the first transatlantic flight between Spain and South America.",
+    "fullDescription": "Also known as the Ícaro Monument, this statue commemorates the historic 1926 flight of the 'Plus Ultra' seaplane. Piloted by Ramón Franco, the plane took off from Palos de la Frontera and successfully landed in Buenos Aires, Argentina. The monument, depicting Icarus, was gifted by the nation of Argentina to Spain in gratitude for the historic connection.",
+    "mainImage": "images/landmarks-images/plus-ultra.png",
+    "interestingFacts": [
+      "The flight took 59 hours and 39 minutes of flying time spread over several days.",
+      "King Alfonso XIII personally bid farewell to the aviators from this area.",
+      "The original Plus Ultra aircraft is now in a museum in Luján, Argentina."
+    ],
+    "gallery": [
+      "images/landmarks-images/plus-ultra.png"
+    ]
+  },
+
+  "lm-7": {
+    "name": "Monumento a los Descubridores",
+    "location": "La Rábida, Spain",
+    "yearBuilt": "1892 (Restored 2014)",
+    "architectOrBuilder": "Ricardo Velázquez Bosco",
+    "shortDescription": "A towering 47-meter column honoring the navigators of the New World.",
+    "fullDescription": "Erected to mark the 400th anniversary of the discovery of America, this massive commemorative column stands at the highest point of La Rábida. It was designed by the renowned Spanish architect Ricardo Velázquez Bosco. The monument serves as a beacon and a tribute to the sailors from Palos and Huelva who embarked on the 1492 journey.",
+    "mainImage": "images/landmarks-images/monumento-descubridores.png",
+    "interestingFacts": [
+      "The column is 47 meters (154 feet) tall and dominates the local skyline.",
+      "It was built using a special carved stone that severely deteriorated, requiring a massive restoration in 2014.",
+      "The base features intricate carvings representing the cultures of the Americas."
+    ],
+    "gallery": [
+      "images/landmarks-images/monumento-descubridores.png"
+    ]
+  }
+}

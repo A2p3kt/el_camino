@@ -1,0 +1,406 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Rabida Explorer</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Inherited Map Palette */
+            --primary: #3d5a40;
+            --primary-dark: #2b402d;
+            --accent: #d4a373;
+            --surface: #ffffff;
+            --surface-alt: #f4ebd8;
+            --border: #e9edc9;
+            --text: #2c2c2c;
+            --text-secondary: #5a5a5a;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--surface-alt);
+            color: var(--text);
+            overflow-x: hidden;
+            opacity: 0; /* Starts hidden for fade-in effect */
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 55vh;
+            min-height: 400px;
+            background-color: var(--primary);
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 70%;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 10%;
+        }
+
+        .hero-location {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* --- FLOATING NAV --- */
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255,255,255,0.4);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        /* --- CONTENT GRID --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 10%;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+        }
+
+        .main-col {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .description {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .description::first-letter {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            float: left;
+            margin-right: 12px;
+            line-height: 1;
+        }
+
+        /* --- INFO CARD (SIDEBAR) --- */
+        .info-card {
+            background: var(--surface);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            height: fit-content;
+            border: 1px solid var(--border);
+        }
+
+        .info-item {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-size: 1.15rem;
+            color: var(--text);
+        }
+
+        /* --- FACTS LIST --- */
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-dark);
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin: 20px 0 15px 0;
+        }
+
+        .facts-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .facts-list li {
+            position: relative;
+            padding-left: 35px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .facts-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        /* --- GALLERY --- */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 10% 80px 10%;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 25px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 16px;
+            transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            background-color: var(--surface);
+        }
+
+        .gallery img:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        /* --- ERROR STATE --- */
+        #error-state { 
+            display: none; 
+            text-align: center; 
+            padding: 100px 20px; 
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 40px 6%;
+            }
+            .hero-overlay {
+                padding: 30px 6%;
+            }
+            .back-btn {
+                left: 6%;
+                top: 20px;
+            }
+            .gallery-container {
+                padding: 0 6% 60px 6%;
+            }
+            /* Change the layout logic so the info card sits below the description on mobile */
+            .main-col {
+                order: 1;
+            }
+            .info-card {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-content" style="display: none;">
+        
+        <header class="hero">
+            <a href="index.html" class="back-btn">← Back to Trail</a>
+            <img id="dom-img" class="hero-img" src="" alt="Monument">
+            <div class="hero-overlay">
+                <div id="dom-location" class="hero-location">Loading Location...</div>
+                <h1 id="dom-title" class="hero-title">Loading...</h1>
+            </div>
+        </header>
+
+        <main class="container">
+            
+            <div class="main-col">
+                <p id="dom-desc" class="description"></p>
+                
+                <div>
+                    <h2 class="section-title">Did you know?</h2>
+                    <ul id="dom-facts" class="facts-list"></ul>
+                </div>
+            </div>
+
+            <aside>
+                <div class="info-card">
+                    <div class="info-item">
+                        <div class="info-label">Built / Established</div>
+                        <div id="dom-year" class="info-value"></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Architect / Origin</div>
+                        <div id="dom-architect" class="info-value"></div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <section class="gallery-container">
+            <h2 class="section-title">Gallery</h2>
+            <div id="dom-gallery" class="gallery"></div>
+        </section>
+    </div>
+
+    <div id="error-state">
+        <h1 class="section-title">Landmark Not Found</h1>
+        <p class="description" style="text-align: center;">Sorry, we couldn't find the data for this location.</p>
+        <br>
+        <a href="index.html" class="back-btn" style="position: relative; left: 0; top: 0; border: 1px solid var(--primary); color: var(--primary);">Return to Map</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Get the ID from the URL (e.g., ?id=lm-2)
+            const urlParams = new URLSearchParams(window.location.search);
+            const monumentId = urlParams.get('id');
+
+            const mainContent = document.getElementById('main-content');
+            const errorState = document.getElementById('error-state');
+
+            if (!monumentId) {
+                errorState.style.display = 'block';
+                return;
+            }
+
+            try {
+                // 2. Fetch the JSON file
+                const response = await fetch('monuments.json');
+                const allMonuments = await response.json();
+
+                // 3. Find the specific monument
+                const data = allMonuments[monumentId];
+
+                if (!data) {
+                    errorState.style.display = 'block';
+                    return;
+                }
+
+                // 4. Populate the HTML with the data
+                document.title = `${data.name} | La Rábida Explorer`;
+                
+                // Only load the image if it exists to prevent broken UI
+                if (data.mainImage) {
+                    document.getElementById('dom-img').src = data.mainImage;
+                } else {
+                    document.getElementById('dom-img').style.display = 'none';
+                }
+
+                document.getElementById('dom-title').textContent = data.name;
+                document.getElementById('dom-location').textContent = data.location;
+                document.getElementById('dom-desc').textContent = data.fullDescription;
+                document.getElementById('dom-year').textContent = data.yearBuilt;
+                document.getElementById('dom-architect').textContent = data.architectOrBuilder;
+
+                // Populate Facts
+                const factsUl = document.getElementById('dom-facts');
+                data.interestingFacts.forEach(fact => {
+                    const li = document.createElement('li');
+                    li.textContent = fact;
+                    factsUl.appendChild(li);
+                });
+
+                // Populate Gallery
+                const galleryDiv = document.getElementById('dom-gallery');
+                data.gallery.forEach(imgUrl => {
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.alt = `Gallery image of ${data.name}`;
+                    galleryDiv.appendChild(img);
+                });
+
+                // Hide error, show content
+                errorState.style.display = 'none';
+                mainContent.style.display = 'block';
+
+            } catch (error) {
+                console.error("Error loading monument data:", error);
+                mainContent.style.display = 'none';
+                errorState.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
