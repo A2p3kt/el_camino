@@ -196,6 +196,7 @@
             filter: drop-shadow(0 6px 8px rgba(0,0,0,0.4));
             transition: transform 0.2s;
             transform-origin: bottom center;
+            cursor: pointer;
         }
         .custom-pin:hover {
             transform: scale(1.15) translateY(-4px);
@@ -287,6 +288,7 @@
     });
 
     function initMap() {
+        // We start with a generic center, but it will be instantly overwritten by the auto-framer
         map = L.map('map', { zoomControl: false }).setView([37.208, -6.922], 15);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19, attribution: 'Tiles &copy; Esri'
@@ -304,6 +306,22 @@
             drawLandmarks(mapData.landmarks);
             drawStops(mapData.stops);
             
+            // Frame the entire map perfectly on initial load
+            const allLatLngs = [
+                ...mapData.route, 
+                ...mapData.landmarks.map(l => [l.lat, l.lng])
+            ];
+            
+            if (allLatLngs.length > 0) {
+                const mapBounds = L.latLngBounds(allLatLngs);
+                map.fitBounds(mapBounds, {
+                    paddingTopLeft: [20, 90], // Clears the floating header
+                    paddingBottomRight: [20, 20],
+                    maxZoom: 16
+                });
+            }
+
+            // Only override the global view if a specific QR code/URL is requested
             checkURLHash();
         } catch (error) {
             console.error("Map data failed to load", error);
@@ -365,8 +383,9 @@
             ];
             const opacity = 0.5 - (ratio * 0.45); 
             
+            // Critical fix: interactive: false ensures clicks pass through to the landmarks underneath
             layers.push(L.polygon([coneCoords[0], p1, p2], {
-                color: 'transparent', fillColor: '#faedcd', fillOpacity: opacity, className: 'faded-cone-step'
+                color: 'transparent', fillColor: '#faedcd', fillOpacity: opacity, className: 'faded-cone-step', interactive: false
             }));
         }
         return L.layerGroup(layers);
@@ -380,6 +399,7 @@
             activeTooltip = null;
         }
         
+        // Reset landmarks to default red
         mapData.landmarks.forEach(lm => {
             if (markersMap[lm.id]) markersMap[lm.id].layer.setStyle(defaultLandmarkStyle);
         });
@@ -387,7 +407,7 @@
         const isStop = !!item.viewCone;
         const isMobile = window.innerWidth < 768;
 
-        // Bounding box compilation factoring in viewpoint and objective visual assets
+        // Auto-framing: Ensure the camera keeps both the origin and the target landmarks in view
         let bounds = L.latLngBounds([item.lat, item.lng]);
 
         if (isStop) {
@@ -408,7 +428,7 @@
             bounds.extend([item.lat - pad, item.lng - pad]);
         }
 
-        // Screen canvas dimensions calculation to isolate visual paths from map assets
+        // Apply screen padding so the UI does not block the geometry
         const padTL = isMobile ? [20, 90] : [440, 90]; 
         const padBR = isMobile ? [20, window.innerHeight * 0.45] : [40, 40]; 
 
@@ -423,6 +443,7 @@
             window.history.pushState(null, '', '#' + item.id);
         }
 
+        // Draw Cone & Highlight Landmarks
         if (isStop) {
             if (item.viewCone) {
                 viewConeLayer = drawFadedCone(item.viewCone);
@@ -432,6 +453,8 @@
                 item.visibleLandmarks.forEach(targetId => {
                     if (markersMap[targetId]) {
                         markersMap[targetId].layer.setStyle(activeLandmarkStyle);
+                        // Force the active landmark to the top layer so it can be clicked easily
+                        markersMap[targetId].layer.bringToFront();
                     }
                 });
             }
