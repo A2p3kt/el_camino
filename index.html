@@ -273,17 +273,25 @@
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
 
-                // --- 1. Draw Custom App-Style Image Landmarks ---
-                // --- 1. Draw Custom App-Style Image Landmarks ---
+                // --- 1. Draw Custom App-Style Image Landmarks & Red Areas ---
                 if (landmarks && landmarks.length > 0) {
                     landmarks.forEach(lm => {
                         const latLng = toLatLng(lm);
                         if (latLng) {
-                            const iconUrl = landmarkImages[lm.id] || 'images/default-icon.png';
+                            
+                            // NEW: Draw the red circle area FIRST so it sits behind the pin
+                            L.circle(latLng, {
+                                color: '#8b0000',
+                                fillColor: '#cc0000',
+                                fillOpacity: 0.35,
+                                radius: lm.radius || 50, // Uses the radius from your JSON
+                                weight: 1
+                            }).addTo(map);
 
+                            // Existing: Draw the custom photo pin on top
+                            const iconUrl = landmarkImages[lm.id] || 'images/default-icon.png';
                             const customLandmarkIcon = L.divIcon({
                                 className: 'app-style-pin',
-                                // FIX 1: Removed the alt="${lm.name}" so broken images don't print text inside the circle
                                 html: `<img class="pin-img" src="${iconUrl}" alt="">`,
                                 iconSize: [50, 50],
                                 iconAnchor: [25, 62],
@@ -295,8 +303,7 @@
                             }).addTo(map);
 
                             marker.bindTooltip(lm.name, {
-                                // FIX 2: Set to false! Now the name only appears cleanly when you hover over the pin.
-                                permanent: false, 
+                                permanent: false,
                                 direction: 'top',
                                 className: 'app-style-tooltip',
                                 offset: [0, -5]
