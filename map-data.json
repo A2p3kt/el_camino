@@ -1,45 +1,63 @@
 {
   "route": [
-    { "lat": 37.2102, "lng": -6.9513 },
-    { "lat": 37.2097, "lng": -6.9498 },
-    { "lat": 37.2091, "lng": -6.9487 },
-    { "lat": 37.2084, "lng": -6.9476 },
-    { "lat": 37.2078, "lng": -6.9469 },
-    { "lat": 37.2071, "lng": -6.9459 },
-    { "lat": 37.2064, "lng": -6.9449 }
+    { "lat": 37.2118, "lng": -6.9185 },
+    { "lat": 37.2115, "lng": -6.9160 },
+    { "lat": 37.2105, "lng": -6.9135 },
+    { "lat": 37.2090, "lng": -6.9135 },
+    { "lat": 37.2078, "lng": -6.9142 },
+    { "lat": 37.2065, "lng": -6.9155 },
+    { "lat": 37.2055, "lng": -6.9175 },
+    { "lat": 37.2048, "lng": -6.9200 },
+    { "lat": 37.2045, "lng": -6.9220 }
   ],
   "nodes": [
     {
-      "id": "node-1",
+      "id": "stop-1",
       "label": "1",
-      "lat": 37.2102,
-      "lng": -6.9513,
-      "title": "Starting Point: The Marsh Edge",
-      "info": "Begin your walk here. The marshes offer a unique ecosystem where saltwater and freshwater meet."
+      "lat": 37.2118,
+      "lng": -6.9185,
+      "title": "Start of the Marsh Path",
+      "info": "Looking north-west from here, you can see the Maxi-Lecture Hall of the Huelva Campus."
     },
     {
-      "id": "node-2",
+      "id": "stop-2",
       "label": "2",
-      "lat": 37.2091,
-      "lng": -6.9487,
-      "title": "Viewpoint: The Estuary",
-      "info": "Look out over the water. From this vantage point, you can observe the local birdlife that calls the wetlands home."
+      "lat": 37.2105,
+      "lng": -6.9135,
+      "title": "Estero de Domingo Rubio",
+      "info": "Deep in the marshland. Looking west provides a wide view of the UNIA campus."
     },
     {
-      "id": "node-3",
+      "id": "stop-3",
       "label": "3",
       "lat": 37.2078,
-      "lng": -6.9469,
-      "title": "Viewpoint: Muelle de las Carabelas",
-      "info": "Through the clearing, catch a glimpse of the replicas of the Niña, Pinta, and Santa María docked nearby."
+      "lng": -6.9142,
+      "title": "Amphitheater Viewpoint",
+      "info": "Looking straight across the terrain to the west reveals the Amphitheater and Monastery."
     },
     {
-      "id": "node-4",
+      "id": "stop-4",
       "label": "4",
-      "lat": 37.2064,
-      "lng": -6.9449,
-      "title": "Destination: Monasterio de la Rábida",
-      "info": "You have reached the end of the path with a clear view of the historic Franciscan monastery."
+      "lat": 37.2055,
+      "lng": -6.9175,
+      "title": "Southern Edge",
+      "info": "The path turns back inland, approaching the historic southern sector."
+    },
+    {
+      "id": "stop-5",
+      "label": "5",
+      "lat": 37.2045,
+      "lng": -6.9220,
+      "title": "Dock Approach",
+      "info": "The trail concludes near the water, with sightlines to the Carabelas and Plus Ultra."
     }
+  ],
+  "landmarks": [
+    { "id": "lm-1", "lat": 37.201467, "lng": -6.919806, "name": "1. Maxi-Lecture Hall", "radius": 140 },
+    { "id": "lm-2", "lat": 37.2074, "lng": -6.9255, "name": "2. Monastery of La Rábida", "radius": 45 },
+    { "id": "lm-3", "lat": 37.2090, "lng": -6.9230, "name": "3. Amphitheater", "radius": 60 },
+    { "id": "lm-4", "lat": 37.2095, "lng": -6.9200, "name": "4. UNIA", "radius": 90 },
+    { "id": "lm-5", "lat": 37.2055, "lng": -6.9265, "name": "5. Carabelas", "radius": 55 },
+    { "id": "lm-6", "lat": 37.2105, "lng": -6.9288, "name": "6. Monument of Plus Ultra", "radius": 40 }
   ]
 }

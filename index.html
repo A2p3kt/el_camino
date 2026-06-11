@@ -208,7 +208,7 @@
                 mapHint.textContent = `Selected: ${nodeData.title || 'Landmark'}`;
             };
 
-            const initMap = (route, nodes) => {
+            const initMap = (route, nodes, landmarks) => {
                 map = L.map('map', {
                     zoomControl: true
                 });
@@ -218,29 +218,44 @@
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
 
-                const routeLatLngs = (route || []).map(toLatLng).filter(Boolean);
-                const nodeLatLngs = (nodes || [])
-                    .map((node) => ({
-                        node,
-                        latLng: toLatLng(node)
-                    }))
-                    .filter((entry) => entry.latLng);
+                // Draw Red Landmarks
+                if (landmarks && landmarks.length > 0) {
+                    landmarks.forEach(lm => {
+                        const latLng = toLatLng(lm);
+                        if (latLng) {
+                            L.circle(latLng, {
+                                color: '#8b0000',
+                                fillColor: '#cc0000',
+                                fillOpacity: 0.35,
+                                radius: lm.radius || 50,
+                                weight: 1
+                            }).addTo(map).bindTooltip(lm.name, { permanent: false });
+                        }
+                    });
+                }
 
+                // Draw Green Route
+                const routeLatLngs = (route || []).map(toLatLng).filter(Boolean);
                 if (routeLatLngs.length >= 2) {
                     L.polyline(routeLatLngs, {
-                        color: '#0f7f4f',
+                        color: '#65a765', 
                         weight: 5,
                         opacity: 0.9
                     }).addTo(map);
                 }
 
+                // Draw Green Stops (Nodes)
+                const nodeLatLngs = (nodes || [])
+                    .map((node) => ({ node, latLng: toLatLng(node) }))
+                    .filter((entry) => entry.latLng);
+
                 nodeLatLngs.forEach(({ node, latLng }) => {
                     const marker = L.circleMarker(latLng, {
                         radius: 8,
-                        color: '#124f35',
+                        color: '#2b5329',
                         weight: 2,
-                        fillColor: '#28a86b',
-                        fillOpacity: 0.95
+                        fillColor: '#4c8c4a',
+                        fillOpacity: 1
                     }).addTo(map);
 
                     const label = node.label ? String(node.label) : '';
@@ -256,7 +271,12 @@
                     marker.on('click', () => showNodeInfo(node));
                 });
 
-                const allPoints = [...routeLatLngs, ...nodeLatLngs.map((entry) => entry.latLng)];
+                // Fit map bounds to include route, nodes, and landmarks
+                let allPoints = [...routeLatLngs, ...nodeLatLngs.map((entry) => entry.latLng)];
+                if (landmarks && landmarks.length > 0) {
+                    allPoints = [...allPoints, ...landmarks.map(toLatLng).filter(Boolean)];
+                }
+
                 if (allPoints.length > 0) {
                     map.fitBounds(allPoints, { padding: [40, 40] });
                 } else {
@@ -273,7 +293,7 @@
                     }
 
                     const mapData = await response.json();
-                    initMap(mapData.route, mapData.nodes);
+                    initMap(mapData.route, mapData.nodes, mapData.landmarks);
                 } catch (error) {
                     console.error(error);
                     mapHint.textContent = 'Map data could not be loaded';
