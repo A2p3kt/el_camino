@@ -144,6 +144,30 @@
             font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;
         }
         
+        /* --- NEW BUTTON CSS --- */
+        .visit-btn {
+            display: block;
+            width: 100%;
+            margin-top: 18px;
+            padding: 12px 0;
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s var(--ease);
+            box-shadow: 0 4px 12px rgba(61, 90, 64, 0.2);
+        }
+
+        .visit-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(61, 90, 64, 0.3);
+        }
+
         .monument-link {
             color: var(--primary);
             font-weight: 700;
@@ -231,6 +255,9 @@
             <div id="d-type" class="detail-type"></div>
             <h3 id="d-title"></h3>
             <div id="d-desc" class="detail-desc"></div>
+            
+            <!-- NEW VISIT PAGE BUTTON -->
+            <a href="#" id="d-visit-btn" class="visit-btn">Visit Monument Page</a>
         </div>
     </div>
 </div>
@@ -425,6 +452,17 @@
         document.getElementById('d-title').textContent = item.name;
         document.getElementById('d-desc').innerHTML = item.desc;
         document.getElementById('d-img').src = item.img || 'https://via.placeholder.com/400x200?text=Image+Not+Found';
+
+        // --- NEW BUTTON LOGIC ---
+        const visitBtn = document.getElementById('d-visit-btn');
+        if (!isStop && item.id) {
+            // Display button and link to our dynamic monument page
+            visitBtn.href = `monument.html?id=${item.id}`;
+            visitBtn.style.display = 'block';
+        } else {
+            // Hide the button if it's just a viewpoint/stop
+            visitBtn.style.display = 'none';
+        }
     }
 
     function hideDetails() {
