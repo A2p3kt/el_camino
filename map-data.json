@@ -1,55 +1,49 @@
 {
   "route": [
-    { "lat": 37.2118, "lng": -6.9185 },
-    { "lat": 37.2115, "lng": -6.9160 },
-    { "lat": 37.2105, "lng": -6.9135 },
-    { "lat": 37.2090, "lng": -6.9135 },
-    { "lat": 37.2078, "lng": -6.9142 },
-    { "lat": 37.2065, "lng": -6.9155 },
-    { "lat": 37.2055, "lng": -6.9175 },
-    { "lat": 37.2048, "lng": -6.9200 },
-    { "lat": 37.2045, "lng": -6.9220 }
+    { "lat": 37.200864, "lng": -6.924522 },
+    { "lat": 37.205217, "lng": -6.930372 },
+    { "lat": 37.205094, "lng": -6.931164 },
+    { "lat": 37.205217, "lng": -6.930372 },
+    { "lat": 37.206458, "lng": -6.931342 },
+    { "lat": 37.207269, "lng": -6.932331 },
+    { "lat": 37.208944, "lng": -6.930386 },
+    { "lat": 37.210575, "lng": -6.929539 },
+    { "lat": 37.208944, "lng": -6.930386 },
+    { "lat": 37.203228, "lng": -6.925839 },
+    { "lat": 37.200864, "lng": -6.924522 }
   ],
   "nodes": [
     {
       "id": "stop-1",
       "label": "1",
-      "lat": 37.2118,
-      "lng": -6.9185,
-      "title": "Start of the Marsh Path",
+      "lat": 37.200864,
+      "lng": -6.924522,
+      "title": "Start of the Path",
       "info": "Looking north-west from here, you can see the Maxi-Lecture Hall of the Huelva Campus."
     },
     {
       "id": "stop-2",
       "label": "2",
-      "lat": 37.2105,
-      "lng": -6.9135,
+      "lat": 37.205033,
+      "lng": -6.931289,
       "title": "Estero de Domingo Rubio",
       "info": "Deep in the marshland. Looking west provides a wide view of the UNIA campus."
     },
     {
       "id": "stop-3",
       "label": "3",
-      "lat": 37.2078,
-      "lng": -6.9142,
+      "lat": 37.208944,
+      "lng": -6.930386,
       "title": "Amphitheater Viewpoint",
       "info": "Looking straight across the terrain to the west reveals the Amphitheater and Monastery."
     },
     {
       "id": "stop-4",
       "label": "4",
-      "lat": 37.2055,
-      "lng": -6.9175,
+      "lat": 37.210575,
+      "lng": -6.929539,
       "title": "Southern Edge",
       "info": "The path turns back inland, approaching the historic southern sector."
-    },
-    {
-      "id": "stop-5",
-      "label": "5",
-      "lat": 37.2045,
-      "lng": -6.9220,
-      "title": "Dock Approach",
-      "info": "The trail concludes near the water, with sightlines to the Carabelas and Plus Ultra."
     }
   ],
   "landmarks": [
