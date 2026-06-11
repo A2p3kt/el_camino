@@ -3,451 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Camino - La Rabida</title>
+    <title>El Camino - La Rabida Explorer</title>
     
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
     
     <style>
         :root {
-            --parchment: #f4ebd8;
-            --vintage-green: #3d5a40;
-            --text-dark: #2c2c2c;
-            --modal-bg: rgba(255, 255, 255, 0.96);
+            /* Earthy, vintage palette inspired by original index.html */
+            --primary: #3d5a40;
+            --primary-dark: #2b402d;
+            --primary-glow: rgba(61, 90, 64, 0.15);
+            --accent: #d4a373;
+            --accent-soft: #faedcd;
+            --surface: #ffffff;
+            --surface-alt: #f4ebd8; /* parchment */
+            --border: #e9edc9;
+            --border-hover: #ccd5ae;
+            --text: #2c2c2c;
+            --text-secondary: #5a5a5a;
+            --text-muted: #8b8b8b;
+            --sidebar-w: 390px;
+            --radius: 14px;
+            --radius-sm: 10px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Georgia, serif;
-            background-color: var(--parchment);
-            color: var(--text-dark);
-            overflow: hidden;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+            display: flex; height: 100vh; height: 100dvh;
+            background: var(--surface-alt); overflow: hidden; color: var(--text);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- Welcome Screen UI --- */
-        #welcome-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(rgba(244, 235, 216, 0.55), rgba(244, 235, 216, 0.55)), url('images/IMG-20260609-WA0132.jpg');
+        /* ─────── SIDEBAR ─────── */
+        .sidebar {
+            width: var(--sidebar-w); min-width: var(--sidebar-w);
+            display: flex; flex-direction: column;
+            background: var(--surface); z-index: 20;
+            border-right: 1px solid var(--border);
+            transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+        }
+
+        .brand {
+            padding: 2rem 1.5rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            background-image: linear-gradient(rgba(61, 90, 64, 0.85), rgba(43, 64, 45, 0.95)), url('images/IMG-20260609-WA0132.jpg');
             background-size: cover;
             background-position: center;
-            z-index: 1000;
-            transition: opacity 0.8s ease-out;
-            text-align: center;
-            padding: 24px;
-            box-sizing: border-box;
-        }
-
-        #welcome-screen h1 {
-            font-size: 3.2rem;
-            color: var(--vintage-green);
-            margin: 0 0 12px;
-        }
-
-        #welcome-screen p {
-            font-size: 1.15rem;
-            margin: 0 0 28px;
-            max-width: 680px;
-        }
-
-        #start-btn {
-            padding: 14px 28px;
-            font-size: 1.1rem;
-            background-color: var(--vintage-green);
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        #start-btn:hover {
-            background-color: #2b402d;
-        }
-
-        /* --- Map Container UI --- */
-        #map-container {
-            display: none;
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-
-        #map-hint {
-            position: absolute;
-            left: 16px;
-            top: 16px;
-            z-index: 500;
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-            font-size: 0.95rem;
-        }
-
-        /* --- Modal UI --- */
-        #info-modal {
-            position: absolute;
-            left: 50%;
-            bottom: -320px;
-            transform: translateX(-50%);
-            width: min(92%, 520px);
-            background: var(--modal-bg);
-            border-radius: 18px 18px 0 0;
-            padding: 18px;
-            box-sizing: border-box;
-            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.22);
-            z-index: 600;
-            transition: bottom 0.35s ease;
-        }
-
-        #info-modal.active {
-            bottom: 0;
-        }
-
-        #modal-title {
-            margin: 0 0 8px;
-            color: var(--vintage-green);
-        }
-
-        #modal-text {
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        #close-modal {
-            margin-top: 14px;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 999px;
-            background: var(--vintage-green);
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .landmark-label {
-            border: 0;
-            background: transparent;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-        }
-
-        /* --- Custom App-Style Map Pins --- */
-        .app-style-pin {
-            position: relative;
-            width: 50px; 
-            height: 50px;
-            overflow: visible !important; 
-        }
-
-        .app-style-pin .pin-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 3px solid #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            object-fit: cover;
-            background-color: #fff;
-            position: relative;
-            z-index: 2;
-        }
-
-        .app-style-pin::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 12px 10px 0;
-            border-style: solid;
-            border-color: #ffffff transparent transparent transparent;
-            z-index: 1;
-            filter: drop-shadow(0 3px 2px rgba(0,0,0,0.2));
         }
         
-        .leaflet-tooltip.app-style-tooltip {
-            background: rgba(255, 255, 255, 0.95);
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            color: #333;
-            font-weight: bold;
-            font-size: 0.9rem;
-            padding: 4px 12px;
+        .brand h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800; font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
         }
         
-        .leaflet-tooltip.app-style-tooltip::before {
-            display: none; 
+        .brand p {
+            font-size: 0.85rem; opacity: 0.9; margin-top: 0.3rem;
+            line-height: 1.4;
         }
 
-        .clickable-zone {
+        .list-header {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem; color: var(--text-muted); font-weight: 700;
+            padding: 1rem 1.3rem 0.5rem;
+            background: var(--surface-alt);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .location-list {
+            flex: 1; overflow-y: auto; padding: 0.65rem;
+            scroll-behavior: smooth;
+        }
+        .location-list::-webkit-scrollbar { width: 4px; }
+        .location-list::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
+
+        /* ─────── LIST ITEMS ─────── */
+        .loc-item {
+            padding: 0.95rem 1.05rem; border: 1.5px solid var(--border);
+            border-radius: var(--radius); margin-bottom: 0.55rem;
+            cursor: pointer; transition: all 0.2s var(--ease);
+            background: var(--surface); position: relative;
+            overflow: hidden;
+        }
+        .loc-item::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 4px; background: transparent; transition: background 0.2s;
+            border-radius: 0 4px 4px 0;
+        }
+        .loc-item:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+        .loc-item:hover::before { background: var(--primary); }
+        .loc-item.selected {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .loc-item.selected::before { background: var(--accent); }
+
+        .loc-type {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.62rem; color: var(--primary);
+            font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .loc-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700; margin: 4px 0 0; color: var(--text);
+            font-size: 0.95rem; line-height: 1.35;
+        }
+
+        /* ─────── MAP ─────── */
+        .map-area { flex: 1; position: relative; min-width: 0; }
+        #map { height: 100%; width: 100%; }
+
+        /* ─────── DETAILS CARD ─────── */
+        #details-card {
+            position: absolute; bottom: 20px; right: 20px; width: 370px;
+            background: var(--surface); border-radius: 18px;
+            box-shadow: 0 20px 60px -15px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.04);
+            display: none; z-index: 1000; overflow: hidden;
+            animation: cardIn 0.4s var(--ease);
+            max-height: calc(100dvh - 40px); overflow-y: auto;
+        }
+        #details-card::-webkit-scrollbar { width: 4px; }
+        #details-card::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+        @keyframes cardIn {
+            from { transform: translateY(20px) scale(0.97); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .detail-img-wrap { position: relative; overflow: hidden; }
+        .detail-img-wrap img {
+            width: 100%; height: 200px; object-fit: cover;
+            display: block; transition: transform 0.5s var(--ease);
+        }
+        .detail-img-wrap::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 0; right: 0; height: 60px;
+            background: linear-gradient(transparent, white);
+            pointer-events: none;
+        }
+
+        .close-btn {
+            position: absolute; top: 12px; right: 12px;
+            border: none; background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(12px); color: white; 
+            width: 32px; height: 32px; border-radius: 50%; 
+            cursor: pointer; z-index: 10; display: flex; 
+            align-items: center; justify-content: center; 
+            transition: all 0.2s var(--ease);
+        }
+        .close-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
+
+        .detail-body { padding: 1rem 1.4rem 1.4rem; }
+        .detail-body .detail-type {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--accent); font-weight: 700;
+            font-size: 0.68rem; text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .detail-body h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin: 5px 0 12px; font-size: 1.25rem;
+            line-height: 1.25; font-weight: 800; color: var(--primary-dark);
+        }
+        .detail-body .detail-desc {
+            font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7;
+            margin-bottom: 10px;
+        }
+        
+        /* Cross-linking style within description */
+        .monument-link {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: underline;
+            text-decoration-color: var(--accent);
+            text-decoration-thickness: 2px;
             cursor: pointer;
+            transition: color 0.2s;
+        }
+        .monument-link:hover {
+            color: var(--accent);
+        }
+
+        /* Custom Leaflet Controls */
+        .leaflet-control-zoom a {
+            border-radius: 8px !important; width: 34px !important; height: 34px !important;
+            line-height: 34px !important; border: 1.5px solid var(--border) !important;
+            color: var(--text) !important;
+        }
+        .leaflet-control-zoom { border-radius: 10px !important; overflow: hidden; border: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; }
+
+        /* Custom Icon Styles */
+        .person-icon {
+            display: flex; align-items: center; justify-content: center;
+            background: white; border: 3px solid var(--primary);
+            border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 18px; color: var(--primary);
         }
     </style>
 </head>
 <body>
-    <div id="welcome-screen">
-        <h1>Welcome to El Camino</h1>
+
+<div class="sidebar" id="sidebar">
+    <div class="brand">
+        <h2>El Camino</h2>
         <p>Follow the trail through the marshes of La Rabida and discover the landmarks that shaped history.</p>
-        <button id="start-btn">Start Exploring</button>
     </div>
+    <div class="list-header">Points of Interest</div>
+    <div id="location-list" class="location-list">
+        </div>
+</div>
 
-    <div id="map-container">
-        <div id="map-hint">Select a point to reveal the landmark</div>
-        <div id="map" aria-label="La Rabida route map"></div>
-
-        <div id="info-modal">
-            <h2 id="modal-title">Landmark Name</h2>
-            <p id="modal-text">Information about this location appears here.</p>
-            <button id="close-modal" type="button">Close</button>
+<div class="map-area">
+    <div id="map" aria-label="La Rabida route map"></div>
+    <div id="details-card">
+        <div class="detail-img-wrap">
+            <button class="close-btn" onclick="hideDetails()" aria-label="Close">&#10005;</button>
+            <img id="d-img" alt="Location image">
+        </div>
+        <div class="detail-body">
+            <div id="d-type" class="detail-type"></div>
+            <h3 id="d-title"></h3>
+            <div id="d-desc" class="detail-desc"></div>
         </div>
     </div>
+</div>
 
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""
-    ></script>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const welcomeScreen = document.getElementById('welcome-screen');
-            const startBtn = document.getElementById('start-btn');
-            const mapContainer = document.getElementById('map-container');
-            const mapHint = document.getElementById('map-hint');
-            const infoModal = document.getElementById('info-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalText = document.getElementById('modal-text');
-            const closeModalBtn = document.getElementById('close-modal');
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+    let map;
+    let mapData = { route: [], landmarks: [], stops: [] };
+    let viewConeLayer = null;
+    let markersMap = {}; 
 
-            let map = null;
+    // Allow inline HTML in JSON descriptions to trigger UI changes
+    window.triggerLocation = (id) => {
+        const target = [...mapData.landmarks, ...mapData.stops].find(item => item.id === id);
+        if (target) selectLocation(target);
+    };
 
-            // --- IMAGE DICTIONARY FOR LANDMARKS ---
-            const landmarkImages = {
-                "lm-1": "images/landmarks-images/maxi-lecture-hall.png",
-                "lm-2": "images/landmarks-images/monastery.png",
-                "lm-3": "images/landmarks-images/amphitheater.png",
-                "lm-4": "images/landmarks-images/unia.png",
-                "lm-5": "images/landmarks-images/carabelas.png",
-                "lm-6": "images/landmarks-images/plus-ultra.png",
-                "lm-7": "images/landmarks-images/monumento-descubridores.png"
-            };
+    document.addEventListener('DOMContentLoaded', () => {
+        initMap();
+        loadMapData();
+    });
 
-            const toLatLng = (point) => {
-                if (!point || typeof point !== 'object') return null;
-                const lat = Number(point.lat ?? point.latitude);
-                const lng = Number(point.lng ?? point.lon ?? point.longitude);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-                return [lat, lng];
-            };
+    function initMap() {
+        map = L.map('map', { zoomControl: false }).setView([37.208, -6.922], 15);
+        
+        // High quality satellite imagery
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: 'Tiles &copy; Esri'
+        }).addTo(map);
+        
+        L.control.zoom({ position: 'topright' }).addTo(map);
+    }
 
-            const showNodeInfo = (nodeData) => {
-                modalTitle.textContent = nodeData.title || nodeData.name || 'Landmark';
-                modalText.textContent = nodeData.info || 'No additional information available.';
-                infoModal.classList.add('active');
-                mapHint.textContent = `Selected: ${nodeData.title || nodeData.name || 'Landmark'}`;
-            };
+    async function loadMapData() {
+        try {
+            const response = await fetch('map-data.json');
+            if (!response.ok) throw new Error('Failed to load');
+            mapData = await response.json();
+            
+            drawRoute(mapData.route);
+            drawLandmarks(mapData.landmarks);
+            drawStops(mapData.stops);
+            populateSidebar();
+        } catch (error) {
+            console.error("Using fallback data due to fetch error", error);
+            // Fallback empty state handling here if needed
+        }
+    }
 
-            const initMap = (route, nodes, landmarks) => {
-                map = L.map('map', { zoomControl: true });
+    function drawRoute(routeCoords) {
+        if (!routeCoords || routeCoords.length < 2) return;
+        
+        // Outer glow/shadow for the path to make it pop against satellite view
+        L.polyline(routeCoords, {
+            color: '#1a1a1a', weight: 8, opacity: 0.4
+        }).addTo(map);
 
-                // Satellite imagery
-                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    maxZoom: 19,
-                    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-                }).addTo(map);
+        // Dashed "trail" line
+        L.polyline(routeCoords, {
+            color: '#d4a373', weight: 4, dashArray: '10, 8', opacity: 0.9, lineCap: 'round'
+        }).addTo(map);
+    }
 
-                // --- PROGRESSIVE DISCLOSURE SETUP (SPOTLIGHT EFFECT) ---
-                const ZOOM_THRESHOLD = 16;
-                const landmarkMarkers = {}; // A dictionary to store our photo pins
+    function drawLandmarks(landmarks) {
+        landmarks.forEach(lm => {
+            const latLng = [lm.lat, lm.lng];
+            
+            // Draw red area
+            const circle = L.circle(latLng, {
+                color: '#8b0000', fillColor: '#cc0000',
+                fillOpacity: 0.4, radius: lm.radius || 40, weight: 2
+            }).addTo(map);
 
-                // --- 1. Draw Landmarks ---
-                if (landmarks && landmarks.length > 0) {
-                    landmarks.forEach(lm => {
-                        const latLng = toLatLng(lm);
-                        if (latLng) {
-                            
-                            // A. Draw the Red Area (Always visible)
-                            const circleArea = L.circle(latLng, {
-                                color: '#8b0000',
-                                fillColor: '#cc0000',
-                                fillOpacity: 0.35,
-                                radius: lm.radius || 50, 
-                                weight: 1,
-                                className: 'clickable-zone'
-                            }).addTo(map);
-
-                            // B. Zoom interaction
-                            circleArea.on('click', () => {
-                                map.flyTo(latLng, ZOOM_THRESHOLD, {
-                                    animate: true,
-                                    duration: 0.8
-                                });
-                            });
-
-                            // C. Build the custom photo pin (but do NOT add to map yet)
-                            const iconUrl = landmarkImages[lm.id] || 'images/default-icon.png';
-                            const customLandmarkIcon = L.divIcon({
-                                className: 'app-style-pin',
-                                html: `<img class="pin-img" src="${iconUrl}" alt="">`,
-                                iconSize: [50, 50],
-                                iconAnchor: [25, 62],
-                                tooltipAnchor: [0, -55]
-                            });
-
-                            const marker = L.marker(latLng, { 
-                                icon: customLandmarkIcon 
-                            });
-
-                            marker.bindTooltip(lm.name, {
-                                permanent: false, 
-                                direction: 'top',
-                                className: 'app-style-tooltip',
-                                offset: [0, -5]
-                            });
-
-                            // Store it in our dictionary with its coordinates for distance checking
-                            landmarkMarkers[lm.id] = { 
-                                marker: marker, 
-                                latLngObj: L.latLng(latLng) 
-                            };
-                        }
-                    });
-                }
-
-                // --- 2. Draw Walkable Green Route Line ---
-                const routeLatLngs = (route || []).map(toLatLng).filter(Boolean);
-                if (routeLatLngs.length >= 2) {
-                    L.polyline(routeLatLngs, {
-                        color: '#44cc44', 
-                        weight: 6,
-                        opacity: 0.95
-                    }).addTo(map);
-                }
-
-                // --- 3. Draw Green Route Stops (Nodes) ---
-                const nodeLatLngs = (nodes || [])
-                    .map((node) => ({ node, latLng: toLatLng(node) }))
-                    .filter((entry) => entry.latLng);
-
-                nodeLatLngs.forEach(({ node, latLng }) => {
-                    const marker = L.circleMarker(latLng, {
-                        radius: 9,
-                        color: '#1a3a1a',
-                        weight: 3,
-                        fillColor: '#55dd55',
-                        fillOpacity: 1
-                    }).addTo(map);
-
-                    const label = node.label ? String(node.label) : '';
-                    if (label) {
-                        marker.bindTooltip(label, {
-                            permanent: true,
-                            direction: 'top',
-                            className: 'landmark-label',
-                            offset: [0, -12]
-                        });
-                    }
-
-                    marker.on('click', () => showNodeInfo(node));
-                });
-
-                // --- 4. DEFAULT VIEW ---
-                // Guarantees all photos are hidden when the user first enters the site
-                map.setView([37.208, -6.922], 15);
-
-                // --- 5. SMART SPOTLIGHT LOGIC ---
-                const updatePinVisibility = () => {
-                    // If we are zoomed out, hide EVERYTHING
-                    if (map.getZoom() < ZOOM_THRESHOLD) {
-                        Object.values(landmarkMarkers).forEach(item => {
-                            if (map.hasLayer(item.marker)) map.removeLayer(item.marker);
-                        });
-                        return; // Stop here
-                    }
-
-                    // If we are zoomed in, find the landmark closest to the center of the screen!
-                    const center = map.getCenter();
-                    let closestId = null;
-                    let minDistance = Infinity;
-
-                    Object.entries(landmarkMarkers).forEach(([id, item]) => {
-                        const distance = center.distanceTo(item.latLngObj);
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                            closestId = id;
-                        }
-                    });
-
-                    // Loop through the pins: Add the closest one, remove the others.
-                    Object.entries(landmarkMarkers).forEach(([id, item]) => {
-                        if (id === closestId) {
-                            if (!map.hasLayer(item.marker)) map.addLayer(item.marker);
-                        } else {
-                            if (map.hasLayer(item.marker)) map.removeLayer(item.marker);
-                        }
-                    });
-                };
-
-                // Listen to zooming AND panning to dynamically shift the spotlight
-                map.on('zoomend moveend', updatePinVisibility);
-                
-                // Do an initial check
-                setTimeout(updatePinVisibility, 100);
-            };
-
-            const loadMapData = async () => {
-                try {
-                    const response = await fetch('map-data.json');
-                    if (!response.ok) {
-                        throw new Error(`Failed to load map data: ${response.status}`);
-                    }
-
-                    const mapData = await response.json();
-                    initMap(mapData.route, mapData.nodes, mapData.landmarks);
-                } catch (error) {
-                    console.error(error);
-                    mapHint.textContent = 'Map data could not be loaded';
-                    modalTitle.textContent = 'Map data unavailable';
-                    modalText.textContent = 'The map or landmark points could not be loaded from map-data.json.';
-                    infoModal.classList.add('active');
-                }
-            };
-
-            startBtn.addEventListener('click', () => {
-                welcomeScreen.style.opacity = '0';
-                setTimeout(() => {
-                    welcomeScreen.style.display = 'none';
-                    mapContainer.style.display = 'block';
-                    loadMapData(); 
-                }, 800);
-            });
-
-            closeModalBtn.addEventListener('click', () => {
-                infoModal.classList.remove('active');
-            });
+            circle.on('click', () => selectLocation(lm));
+            markersMap[lm.id] = { layer: circle, data: lm, type: 'landmark' };
         });
-    </script>
+    }
+
+    function drawStops(stops) {
+        stops.forEach(stop => {
+            const latLng = [stop.lat, stop.lng];
+            
+            // Person Icon
+            const icon = L.divIcon({
+                className: 'person-icon',
+                html: `&#128104;`, // Emoji or insert SVG here
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+
+            const marker = L.marker(latLng, { icon: icon }).addTo(map);
+            marker.on('click', () => selectLocation(stop));
+            markersMap[stop.id] = { layer: marker, data: stop, type: 'stop' };
+        });
+    }
+
+    function populateSidebar() {
+        const list = document.getElementById('location-list');
+        list.innerHTML = '';
+
+        const allItems = [...mapData.landmarks.map(l => ({...l, _type: 'Landmark'})), 
+                          ...mapData.stops.map(s => ({...s, _type: 'Viewpoint'}))];
+
+        allItems.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'loc-item';
+            div.id = `side-${item.id}`;
+            div.innerHTML = `
+                <div class="loc-type">${item._type}</div>
+                <div class="loc-title">${item.name}</div>
+            `;
+            div.onclick = () => selectLocation(item);
+            list.appendChild(div);
+        });
+    }
+
+    function selectLocation(item) {
+        // Clear UI states
+        document.querySelectorAll('.loc-item').forEach(el => el.classList.remove('selected'));
+        if (viewConeLayer) map.removeLayer(viewConeLayer);
+
+        const isStop = !!item.viewCone;
+
+        // Fly to location
+        map.flyTo([item.lat, item.lng], 17, { animate: true, duration: 1 });
+
+        // Highlight Sidebar
+        const sideEl = document.getElementById(`side-${item.id}`);
+        if (sideEl) {
+            sideEl.classList.add('selected');
+            sideEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Draw View Cone if it's a stop
+        if (isStop && item.viewCone) {
+            viewConeLayer = L.polygon(item.viewCone, {
+                color: '#d4a373', weight: 1, fillColor: '#faedcd', fillOpacity: 0.4, className: 'view-cone-anim'
+            }).addTo(map);
+        }
+
+        // Populate Card
+        document.getElementById('details-card').style.display = 'block';
+        document.getElementById('d-type').textContent = isStop ? 'Viewpoint' : 'Landmark';
+        document.getElementById('d-title').textContent = item.name;
+        document.getElementById('d-desc').innerHTML = item.desc;
+        document.getElementById('d-img').src = item.img || 'https://via.placeholder.com/400x200?text=Image+Not+Found';
+    }
+
+    function hideDetails() {
+        document.getElementById('details-card').style.display = 'none';
+        document.querySelectorAll('.loc-item').forEach(el => el.classList.remove('selected'));
+        if (viewConeLayer) map.removeLayer(viewConeLayer);
+    }
+</script>
 </body>
 </html>
