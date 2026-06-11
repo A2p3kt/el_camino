@@ -7,29 +7,22 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
     
     <style>
         :root {
-            /* Earthy, vintage palette inspired by original index.html */
             --primary: #3d5a40;
             --primary-dark: #2b402d;
-            --primary-glow: rgba(61, 90, 64, 0.15);
             --accent: #d4a373;
             --accent-soft: #faedcd;
+            --highlight: #f59e0b;
             --surface: #ffffff;
-            --surface-alt: #f4ebd8; /* parchment */
             --border: #e9edc9;
-            --border-hover: #ccd5ae;
             --text: #2c2c2c;
             --text-secondary: #5a5a5a;
-            --text-muted: #8b8b8b;
-            --sidebar-w: 390px;
-            --radius: 14px;
-            --radius-sm: 10px;
-            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease: cubic-bezier(0.32, 0.72, 0, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,200 +30,199 @@
         body {
             font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
             display: flex; height: 100vh; height: 100dvh;
-            background: var(--surface-alt); overflow: hidden; color: var(--text);
+            overflow: hidden; color: var(--text);
+            background: #f4ebd8;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ─────── SIDEBAR ─────── */
-        .sidebar {
-            width: var(--sidebar-w); min-width: var(--sidebar-w);
-            display: flex; flex-direction: column;
-            background: var(--surface); z-index: 20;
-            border-right: 1px solid var(--border);
-            transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
-        }
-
-        .brand {
-            padding: 2rem 1.5rem 1.5rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            background-image: linear-gradient(rgba(61, 90, 64, 0.85), rgba(43, 64, 45, 0.95)), url('images/IMG-20260609-WA0132.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .brand h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800; font-size: 1.6rem;
-            letter-spacing: -0.02em;
-            margin-bottom: 8px;
-        }
-        
-        .brand p {
-            font-size: 0.85rem; opacity: 0.9; margin-top: 0.3rem;
-            line-height: 1.4;
-        }
-
-        .list-header {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.75rem; color: var(--text-muted); font-weight: 700;
-            padding: 1rem 1.3rem 0.5rem;
-            background: var(--surface-alt);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .location-list {
-            flex: 1; overflow-y: auto; padding: 0.65rem;
-            scroll-behavior: smooth;
-        }
-        .location-list::-webkit-scrollbar { width: 4px; }
-        .location-list::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
-
-        /* ─────── LIST ITEMS ─────── */
-        .loc-item {
-            padding: 0.95rem 1.05rem; border: 1.5px solid var(--border);
-            border-radius: var(--radius); margin-bottom: 0.55rem;
-            cursor: pointer; transition: all 0.2s var(--ease);
-            background: var(--surface); position: relative;
-            overflow: hidden;
-        }
-        .loc-item::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-            width: 4px; background: transparent; transition: background 0.2s;
-            border-radius: 0 4px 4px 0;
-        }
-        .loc-item:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-1px);
-        }
-        .loc-item:hover::before { background: var(--primary); }
-        .loc-item.selected {
-            border-color: var(--accent);
-            background: var(--accent-soft);
-        }
-        .loc-item.selected::before { background: var(--accent); }
-
-        .loc-type {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.62rem; color: var(--primary);
-            font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .loc-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700; margin: 4px 0 0; color: var(--text);
-            font-size: 0.95rem; line-height: 1.35;
-        }
-
         /* ─────── MAP ─────── */
-        .map-area { flex: 1; position: relative; min-width: 0; }
-        #map { height: 100%; width: 100%; }
+        #map { height: 100%; width: 100%; z-index: 10; }
 
-        /* ─────── DETAILS CARD ─────── */
-        #details-card {
-            position: absolute; bottom: 20px; right: 20px; width: 370px;
-            background: var(--surface); border-radius: 18px;
-            box-shadow: 0 20px 60px -15px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.04);
-            display: none; z-index: 1000; overflow: hidden;
-            animation: cardIn 0.4s var(--ease);
-            max-height: calc(100dvh - 40px); overflow-y: auto;
+        /* ─────── FLOATING HEADER ─────── */
+        .app-header {
+            position: absolute;
+            top: 16px; left: 16px; right: 16px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 18px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 400px;
         }
-        #details-card::-webkit-scrollbar { width: 4px; }
-        #details-card::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
-
-        @keyframes cardIn {
-            from { transform: translateY(20px) scale(0.97); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
+        @media (min-width: 768px) { .app-header { left: 24px; top: 24px; } }
+        
+        .app-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.25rem; font-weight: 800;
+            color: var(--primary-dark); letter-spacing: -0.02em;
+        }
+        .app-header p {
+            font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;
+            margin-top: 2px;
         }
 
-        .detail-img-wrap { position: relative; overflow: hidden; }
+        /* ─────── BOTTOM SHEET ─────── */
+        #bottom-sheet {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateY(105%);
+            transition: transform 0.5s var(--ease);
+            display: flex; flex-direction: column;
+            max-height: 85dvh;
+        }
+        #bottom-sheet.active {
+            transform: translateY(0);
+        }
+
+        @media (min-width: 768px) {
+            #bottom-sheet {
+                left: 24px; bottom: 24px;
+                width: 400px; right: auto;
+                border-radius: 20px;
+                max-height: calc(100dvh - 120px);
+            }
+        }
+
+        .drag-indicator {
+            width: 40px; height: 5px;
+            background: #d1d5db;
+            border-radius: 10px;
+            margin: 12px auto 0;
+        }
+        @media (min-width: 768px) { .drag-indicator { display: none; } }
+
+        .sheet-content {
+            overflow-y: auto;
+            padding-bottom: 24px;
+        }
+        .sheet-content::-webkit-scrollbar { width: 4px; }
+        .sheet-content::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+        .detail-img-wrap {
+            position: relative;
+            margin: 16px 16px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
         .detail-img-wrap img {
-            width: 100%; height: 200px; object-fit: cover;
-            display: block; transition: transform 0.5s var(--ease);
-        }
-        .detail-img-wrap::after {
-            content: ''; position: absolute;
-            bottom: 0; left: 0; right: 0; height: 60px;
-            background: linear-gradient(transparent, white);
-            pointer-events: none;
+            width: 100%; height: 180px; object-fit: cover;
+            display: block;
         }
 
         .close-btn {
             position: absolute; top: 12px; right: 12px;
-            border: none; background: rgba(0,0,0,0.45);
-            backdrop-filter: blur(12px); color: white; 
-            width: 32px; height: 32px; border-radius: 50%; 
+            border: none; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            color: white; width: 32px; height: 32px; border-radius: 50%; 
             cursor: pointer; z-index: 10; display: flex; 
             align-items: center; justify-content: center; 
-            transition: all 0.2s var(--ease);
+            transition: background 0.2s;
         }
-        .close-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
+        .close-btn:hover { background: rgba(0,0,0,0.8); }
 
-        .detail-body { padding: 1rem 1.4rem 1.4rem; }
+        .detail-body { padding: 16px 20px; }
         .detail-body .detail-type {
             font-family: 'Montserrat', sans-serif;
             color: var(--accent); font-weight: 700;
-            font-size: 0.68rem; text-transform: uppercase;
+            font-size: 0.7rem; text-transform: uppercase;
             letter-spacing: 0.05em;
         }
         .detail-body h3 {
             font-family: 'Montserrat', sans-serif;
-            margin: 5px 0 12px; font-size: 1.25rem;
-            line-height: 1.25; font-weight: 800; color: var(--primary-dark);
+            margin: 6px 0 10px; font-size: 1.4rem;
+            line-height: 1.2; font-weight: 800; color: var(--primary-dark);
         }
         .detail-body .detail-desc {
-            font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7;
-            margin-bottom: 10px;
+            font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;
         }
         
-        /* Cross-linking style within description */
         .monument-link {
             color: var(--primary);
-            font-weight: 600;
-            text-decoration: underline;
-            text-decoration-color: var(--accent);
-            text-decoration-thickness: 2px;
+            font-weight: 700;
             cursor: pointer;
-            transition: color 0.2s;
+            border-bottom: 2px solid var(--accent);
+            transition: background 0.2s;
         }
         .monument-link:hover {
-            color: var(--accent);
+            background: var(--accent-soft);
         }
 
-        /* Custom Leaflet Controls */
+        /* ─────── MAP UI & ICONS ─────── */
+        .leaflet-control-zoom { 
+            border-radius: 12px !important; overflow: hidden; border: none !important; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important; 
+            margin-right: 16px !important; margin-top: 16px !important;
+        }
         .leaflet-control-zoom a {
-            border-radius: 8px !important; width: 34px !important; height: 34px !important;
-            line-height: 34px !important; border: 1.5px solid var(--border) !important;
-            color: var(--text) !important;
+            width: 38px !important; height: 38px !important;
+            line-height: 38px !important; border: 1px solid #f3f4f6 !important;
+            color: var(--text) !important; font-size: 16px !important;
         }
-        .leaflet-control-zoom { border-radius: 10px !important; overflow: hidden; border: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; }
 
-        /* Custom Icon Styles */
-        .person-icon {
-            display: flex; align-items: center; justify-content: center;
-            background: white; border: 3px solid var(--primary);
-            border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            font-size: 18px; color: var(--primary);
+        .custom-pin {
+            color: var(--primary);
+            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.4));
+            transition: transform 0.2s;
+            transform-origin: bottom center;
+        }
+        .custom-pin:hover {
+            transform: scale(1.15) translateY(-4px);
+        }
+        .custom-pin svg {
+            width: 100%; height: 100%;
+            fill: currentColor;
+            stroke: white;
+            stroke-width: 1.5px;
+        }
+        
+        .faded-cone-step {
+            filter: blur(4px);
+            animation: pulseCone 2.5s infinite alternate;
+        }
+        @keyframes pulseCone {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+
+        .you-are-here-label {
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-shadow: none;
+        }
+        .you-are-here-label::before {
+            border-top-color: var(--primary-dark);
         }
     </style>
 </head>
 <body>
 
-<div class="sidebar" id="sidebar">
-    <div class="brand">
-        <h2>El Camino</h2>
-        <p>Follow the trail through the marshes of La Rabida and discover the landmarks that shaped history.</p>
+<div class="app-header">
+    <div>
+        <h1>El Camino</h1>
+        <p>La Rábida Explorer</p>
     </div>
-    <div class="list-header">Points of Interest</div>
-    <div id="location-list" class="location-list">
-        </div>
 </div>
 
-<div class="map-area">
-    <div id="map" aria-label="La Rabida route map"></div>
-    <div id="details-card">
+<div id="map" aria-label="La Rabida route map"></div>
+
+<div id="bottom-sheet">
+    <div class="drag-indicator"></div>
+    <div class="sheet-content">
         <div class="detail-img-wrap">
             <button class="close-btn" onclick="hideDetails()" aria-label="Close">&#10005;</button>
             <img id="d-img" alt="Location image">
@@ -249,8 +241,13 @@
     let mapData = { route: [], landmarks: [], stops: [] };
     let viewConeLayer = null;
     let markersMap = {}; 
+    let activeTooltip = null;
+    
+    const defaultLandmarkStyle = { color: '#8b0000', fillColor: '#cc0000', fillOpacity: 0.4, weight: 2 };
+    const activeLandmarkStyle = { color: '#b45309', fillColor: '#f59e0b', fillOpacity: 0.8, weight: 3 };
 
-    // Allow inline HTML in JSON descriptions to trigger UI changes
+    const pinSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>`;
+
     window.triggerLocation = (id) => {
         const target = [...mapData.landmarks, ...mapData.stops].find(item => item.id === id);
         if (target) selectLocation(target);
@@ -259,17 +256,14 @@
     document.addEventListener('DOMContentLoaded', () => {
         initMap();
         loadMapData();
+        window.addEventListener('hashchange', checkURLHash);
     });
 
     function initMap() {
         map = L.map('map', { zoomControl: false }).setView([37.208, -6.922], 15);
-        
-        // High quality satellite imagery
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 19,
-            attribution: 'Tiles &copy; Esri'
+            maxZoom: 19, attribution: 'Tiles &copy; Esri'
         }).addTo(map);
-        
         L.control.zoom({ position: 'topright' }).addTo(map);
     }
 
@@ -282,37 +276,32 @@
             drawRoute(mapData.route);
             drawLandmarks(mapData.landmarks);
             drawStops(mapData.stops);
-            populateSidebar();
+            
+            checkURLHash();
         } catch (error) {
-            console.error("Using fallback data due to fetch error", error);
-            // Fallback empty state handling here if needed
+            console.error("Map data failed to load", error);
+        }
+    }
+
+    function checkURLHash() {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            const target = [...mapData.landmarks, ...mapData.stops].find(item => item.id === hash);
+            if (target) selectLocation(target, false);
+        } else {
+            hideDetails();
         }
     }
 
     function drawRoute(routeCoords) {
         if (!routeCoords || routeCoords.length < 2) return;
-        
-        // Outer glow/shadow for the path to make it pop against satellite view
-        L.polyline(routeCoords, {
-            color: '#1a1a1a', weight: 8, opacity: 0.4
-        }).addTo(map);
-
-        // Dashed "trail" line
-        L.polyline(routeCoords, {
-            color: '#d4a373', weight: 4, dashArray: '10, 8', opacity: 0.9, lineCap: 'round'
-        }).addTo(map);
+        L.polyline(routeCoords, { color: '#1a1a1a', weight: 8, opacity: 0.4 }).addTo(map);
+        L.polyline(routeCoords, { color: '#d4a373', weight: 4, dashArray: '10, 8', opacity: 0.9, lineCap: 'round' }).addTo(map);
     }
 
     function drawLandmarks(landmarks) {
         landmarks.forEach(lm => {
-            const latLng = [lm.lat, lm.lng];
-            
-            // Draw red area
-            const circle = L.circle(latLng, {
-                color: '#8b0000', fillColor: '#cc0000',
-                fillOpacity: 0.4, radius: lm.radius || 40, weight: 2
-            }).addTo(map);
-
+            const circle = L.circle([lm.lat, lm.lng], { ...defaultLandmarkStyle, radius: lm.radius || 40 }).addTo(map);
             circle.on('click', () => selectLocation(lm));
             markersMap[lm.id] = { layer: circle, data: lm, type: 'landmark' };
         });
@@ -320,68 +309,118 @@
 
     function drawStops(stops) {
         stops.forEach(stop => {
-            const latLng = [stop.lat, stop.lng];
-            
-            // Person Icon
-            const icon = L.divIcon({
-                className: 'person-icon',
-                html: `&#128104;`, // Emoji or insert SVG here
-                iconSize: [36, 36],
-                iconAnchor: [18, 18]
+            const icon = L.divIcon({ 
+                className: 'custom-pin', 
+                html: pinSvg, 
+                iconSize: [36, 36], 
+                iconAnchor: [18, 34] 
             });
-
-            const marker = L.marker(latLng, { icon: icon }).addTo(map);
+            const marker = L.marker([stop.lat, stop.lng], { icon: icon }).addTo(map);
             marker.on('click', () => selectLocation(stop));
             markersMap[stop.id] = { layer: marker, data: stop, type: 'stop' };
         });
     }
 
-    function populateSidebar() {
-        const list = document.getElementById('location-list');
-        list.innerHTML = '';
-
-        const allItems = [...mapData.landmarks.map(l => ({...l, _type: 'Landmark'})), 
-                          ...mapData.stops.map(s => ({...s, _type: 'Viewpoint'}))];
-
-        allItems.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'loc-item';
-            div.id = `side-${item.id}`;
-            div.innerHTML = `
-                <div class="loc-type">${item._type}</div>
-                <div class="loc-title">${item.name}</div>
-            `;
-            div.onclick = () => selectLocation(item);
-            list.appendChild(div);
-        });
+    function drawFadedCone(coneCoords) {
+        if (!coneCoords || coneCoords.length !== 3) return null;
+        const layers = [];
+        const steps = 5; 
+        
+        for (let i = steps; i > 0; i--) {
+            const ratio = i / steps;
+            const p1 = [
+                coneCoords[0][0] + (coneCoords[1][0] - coneCoords[0][0]) * ratio,
+                coneCoords[0][1] + (coneCoords[1][1] - coneCoords[0][1]) * ratio
+            ];
+            const p2 = [
+                coneCoords[0][0] + (coneCoords[2][0] - coneCoords[0][0]) * ratio,
+                coneCoords[0][1] + (coneCoords[2][1] - coneCoords[0][1]) * ratio
+            ];
+            const opacity = 0.5 - (ratio * 0.45); 
+            
+            layers.push(L.polygon([coneCoords[0], p1, p2], {
+                color: 'transparent', fillColor: '#faedcd', fillOpacity: opacity, className: 'faded-cone-step'
+            }));
+        }
+        return L.layerGroup(layers);
     }
 
-    function selectLocation(item) {
-        // Clear UI states
-        document.querySelectorAll('.loc-item').forEach(el => el.classList.remove('selected'));
+    function selectLocation(item, updateUrl = true) {
         if (viewConeLayer) map.removeLayer(viewConeLayer);
+        
+        if (activeTooltip) {
+            map.removeLayer(activeTooltip);
+            activeTooltip = null;
+        }
+        
+        mapData.landmarks.forEach(lm => {
+            if (markersMap[lm.id]) markersMap[lm.id].layer.setStyle(defaultLandmarkStyle);
+        });
 
         const isStop = !!item.viewCone;
+        const isMobile = window.innerWidth < 768;
 
-        // Fly to location
-        map.flyTo([item.lat, item.lng], 17, { animate: true, duration: 1 });
+        // Bounding box compilation factoring in viewpoint and objective visual assets
+        let bounds = L.latLngBounds([item.lat, item.lng]);
 
-        // Highlight Sidebar
-        const sideEl = document.getElementById(`side-${item.id}`);
-        if (sideEl) {
-            sideEl.classList.add('selected');
-            sideEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (isStop) {
+            if (item.viewCone) {
+                item.viewCone.forEach(coord => bounds.extend(coord));
+            }
+            if (item.visibleLandmarks) {
+                item.visibleLandmarks.forEach(targetId => {
+                    if (markersMap[targetId]) {
+                        const lmData = markersMap[targetId].data;
+                        bounds.extend([lmData.lat, lmData.lng]);
+                    }
+                });
+            }
+        } else {
+            const pad = (item.radius || 40) / 111320; 
+            bounds.extend([item.lat + pad, item.lng + pad]);
+            bounds.extend([item.lat - pad, item.lng - pad]);
         }
 
-        // Draw View Cone if it's a stop
-        if (isStop && item.viewCone) {
-            viewConeLayer = L.polygon(item.viewCone, {
-                color: '#d4a373', weight: 1, fillColor: '#faedcd', fillOpacity: 0.4, className: 'view-cone-anim'
-            }).addTo(map);
+        // Screen canvas dimensions calculation to isolate visual paths from map assets
+        const padTL = isMobile ? [20, 90] : [440, 90]; 
+        const padBR = isMobile ? [20, window.innerHeight * 0.45] : [40, 40]; 
+
+        map.flyToBounds(bounds, {
+            paddingTopLeft: padTL,
+            paddingBottomRight: padBR,
+            duration: 1.0,
+            maxZoom: 18
+        });
+
+        if (updateUrl) {
+            window.history.pushState(null, '', '#' + item.id);
         }
 
-        // Populate Card
-        document.getElementById('details-card').style.display = 'block';
+        if (isStop) {
+            if (item.viewCone) {
+                viewConeLayer = drawFadedCone(item.viewCone);
+                if (viewConeLayer) viewConeLayer.addTo(map);
+            }
+            if (item.visibleLandmarks) {
+                item.visibleLandmarks.forEach(targetId => {
+                    if (markersMap[targetId]) {
+                        markersMap[targetId].layer.setStyle(activeLandmarkStyle);
+                    }
+                });
+            }
+            
+            activeTooltip = L.tooltip({
+                permanent: true,
+                direction: 'top',
+                className: 'you-are-here-label',
+                offset: [0, -32] 
+            })
+            .setLatLng([item.lat, item.lng])
+            .setContent("📍 You are here")
+            .addTo(map);
+        }
+
+        document.getElementById('bottom-sheet').classList.add('active');
         document.getElementById('d-type').textContent = isStop ? 'Viewpoint' : 'Landmark';
         document.getElementById('d-title').textContent = item.name;
         document.getElementById('d-desc').innerHTML = item.desc;
@@ -389,9 +428,20 @@
     }
 
     function hideDetails() {
-        document.getElementById('details-card').style.display = 'none';
-        document.querySelectorAll('.loc-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('bottom-sheet').classList.remove('active');
+        
         if (viewConeLayer) map.removeLayer(viewConeLayer);
+        
+        if (activeTooltip) {
+            map.removeLayer(activeTooltip);
+            activeTooltip = null;
+        }
+        
+        mapData.landmarks.forEach(lm => {
+            if (markersMap[lm.id]) markersMap[lm.id].layer.setStyle(defaultLandmarkStyle);
+        });
+
+        window.history.pushState(null, '', window.location.pathname);
     }
 </script>
 </body>

@@ -85,6 +85,7 @@
       "lng": -6.924522,
       "img": "images/landmarks-images/maxi-lecture-hall.png",
       "desc": "Looking northeast from here, you can see the <span class='monument-link' onclick='triggerLocation(\"lm-1\")'>Maxi-Lecture Hall</span> of the Huelva Campus in the distance.",
+      "visibleLandmarks": ["lm-1"],
       "viewCone": [
         [37.200864, -6.924522],
         [37.2025, -6.920],
@@ -97,7 +98,8 @@
       "lat": 37.205033,
       "lng": -6.931289,
       "img": "images/landmarks-images/unia.png",
-      "desc": "Deep in the marshland. Looking east provides a wide view of the <span class='monument-link' onclick='triggerLocation(\"lm-4\")'>UNIA</span> campus grounds across the water.",
+      "desc": "Deep in the marshland. Looking east provides a wide view of the <span class='monument-link' onclick='triggerLocation(\"lm-4\")'>UNIA</span> campus grounds across the water. Further along the landscape, you can spot the <span class='monument-link' onclick='triggerLocation(\"lm-2\")'>Monastery of La Rábida</span> and the <span class='monument-link' onclick='triggerLocation(\"lm-7\")'>Monumento a los Descubridores</span>.",
+      "visibleLandmarks": ["lm-4", "lm-2", "lm-7"],
       "viewCone": [
         [37.205033, -6.931289],
         [37.209, -6.924],
@@ -111,6 +113,7 @@
       "lng": -6.930386,
       "img": "images/landmarks-images/amphitheater.png",
       "desc": "Looking straight across the terrain to the east reveals both the <span class='monument-link' onclick='triggerLocation(\"lm-3\")'>Amphitheater</span> and the historic <span class='monument-link' onclick='triggerLocation(\"lm-2\")'>Monastery of La Rábida</span>.",
+      "visibleLandmarks": ["lm-2", "lm-3"],
       "viewCone": [
         [37.208944, -6.930386],
         [37.2105, -6.925],
@@ -123,7 +126,8 @@
       "lat": 37.210575,
       "lng": -6.929539,
       "img": "images/landmarks-images/plus-ultra.png",
-      "desc": "The path turns back inland, approaching the historic southern sector where you can clearly see the <span class='monument-link' onclick='triggerLocation(\"lm-6\")'>Monument of Plus Ultra</span>.",
+      "desc": "The path turns back inland, approaching the historic southern sector where you can clearly see the <span class='monument-link' onclick='triggerLocation(\"lm-6\")'>Monument of Plus Ultra</span> and the <span class='monument-link' onclick='triggerLocation(\"lm-5\")'>Carabelas</span> docked nearby.",
+      "visibleLandmarks": ["lm-6", "lm-5"],
       "viewCone": [
         [37.210575, -6.929539],
         [37.212, -6.927],
