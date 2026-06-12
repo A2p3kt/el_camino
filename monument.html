@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Rabida Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Discover the historic landmarks of La Rábida — monuments, architecture, and stories from the age of exploration.">
+    <meta name="theme-color" content="#2b402d">
+    <title>La Rábida Explorer</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,55 +13,67 @@
     
     <style>
         :root {
-    --primary: #3d5a40;
-    --primary-dark: #2b402d;
-    --accent: #d4a373;
-    --surface: #ffffff;
-    --surface-alt: #f4ebd8;
-    --border: #e9edc9;
-    --text: #2c2c2c;
-    --text-secondary: #5a5a5a;
-}
+            --primary: #3d5a40;
+            --primary-dark: #2b402d;
+            --accent: #d4a373;
+            --accent-soft: #faedcd;
+            --surface: #ffffff;
+            --surface-alt: #f4ebd8;
+            --border: #e9edc9;
+            --text: #2c2c2c;
+            --text-secondary: #5a5a5a;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            margin: 0; padding: 0;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
             background-color: var(--surface-alt);
             color: var(--text);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
             opacity: 0;
-            animation: fadeIn 0.6s ease forwards;
+            animation: fadeIn 0.5s ease 0.1s forwards;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- HERO SECTION --- */
+        /* ═══════════════════════════════════
+           HERO SECTION
+           ═══════════════════════════════════ */
         .hero {
             position: relative;
             width: 100%;
-            height: 55vh;
-            min-height: 400px;
-            background-color: var(--primary);
+            height: 50vh;
+            min-height: 320px;
+            background-color: var(--primary-dark);
+            overflow: hidden;
         }
 
         .hero-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.85;
+            opacity: 0;
+            transition: opacity 0.6s ease;
         }
+        .hero-img.loaded { opacity: 0.9; }
 
         .hero-overlay {
             position: absolute;
             bottom: 0; left: 0; right: 0;
-            height: 70%;
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+            height: 75%;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 40px 10%;
+            padding: 32px 6%;
+            padding-bottom: max(32px, var(--safe-bottom));
         }
 
         .hero-location {
@@ -67,67 +81,97 @@
             color: var(--accent);
             text-transform: uppercase;
             font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 0.1em;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
             margin-bottom: 8px;
+            opacity: 0; transform: translateY(10px);
+            animation: slideUp 0.5s ease 0.4s forwards;
         }
 
         .hero-title {
             font-family: 'Montserrat', sans-serif;
             color: white;
-            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
             font-weight: 800;
             margin: 0;
             line-height: 1.1;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+            opacity: 0; transform: translateY(10px);
+            animation: slideUp 0.5s ease 0.5s forwards;
         }
 
-        /* --- FLOATING NAV --- */
+        @keyframes slideUp {
+            to { opacity: 1; transform: none; }
+        }
+
+        /* ═══════════════════════════════════
+           STICKY BACK BUTTON
+           ═══════════════════════════════════ */
         .back-btn {
-            position: absolute;
-            top: 30px;
-            left: 10%;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            position: fixed;
+            top: calc(12px + var(--safe-top));
+            left: 6%;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(12px) saturate(1.6);
+            -webkit-backdrop-filter: blur(12px) saturate(1.6);
             color: white;
             text-decoration: none;
-            padding: 12px 24px;
+            padding: 10px 18px;
             border-radius: 50px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            border: 1px solid rgba(255,255,255,0.4);
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.15);
             transition: all 0.3s ease;
-            z-index: 10;
+            z-index: 100;
+            min-height: 44px;
         }
-
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateX(-5px);
+            background: rgba(0, 0, 0, 0.55);
+        }
+        .back-btn:active {
+            transform: scale(0.95);
         }
 
-        /* --- CONTENT GRID --- */
+        /* After scrolling past hero, switch to solid style */
+        .back-btn.scrolled {
+            background: var(--surface);
+            color: var(--primary-dark);
+            border-color: var(--border);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        /* ═══════════════════════════════════
+           CONTENT
+           ═══════════════════════════════════ */
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 60px 10%;
+            padding: 40px 6%;
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 60px;
+            grid-template-columns: 1fr;
+            gap: 28px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 5fr 2fr;
+                gap: 50px;
+                padding: 60px 8%;
+            }
         }
 
         .main-col {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 28px;
         }
 
         .description {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             line-height: 1.8;
             color: var(--text-secondary);
             margin: 0;
@@ -135,190 +179,380 @@
 
         .description::first-letter {
             font-family: 'Montserrat', sans-serif;
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 800;
             color: var(--primary);
             float: left;
-            margin-right: 12px;
+            margin-right: 10px;
             line-height: 1;
         }
 
-        /* --- INFO CARD (SIDEBAR) --- */
+        /* ─── Info Card ─── */
         .info-card {
             background: var(--surface);
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
             height: fit-content;
             border: 1px solid var(--border);
+            display: flex;
+            flex-direction: row;
+            gap: 0;
         }
 
         .info-item {
-            margin-bottom: 25px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--border);
+            flex: 1;
+            padding: 0 16px;
+            text-align: center;
         }
-        .info-item:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
+        .info-item:first-child {
+            padding-left: 0;
+            border-right: 1px solid var(--border);
         }
+        .info-item:last-child { padding-right: 0; }
 
         .info-label {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--primary);
             font-weight: 700;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
         }
 
         .info-value {
             font-weight: 600;
-            font-size: 1.15rem;
+            font-size: 0.95rem;
             color: var(--text);
+            line-height: 1.3;
         }
 
-        /* --- FACTS LIST --- */
+        @media (min-width: 768px) {
+            .info-card {
+                flex-direction: column;
+                padding: 30px;
+            }
+            .info-item {
+                text-align: left;
+                padding: 0;
+                margin-bottom: 22px;
+                padding-bottom: 22px;
+                border-right: none;
+            }
+            .info-item:first-child {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding-left: 0;
+            }
+            .info-item:last-child {
+                margin-bottom: 0; padding-bottom: 0;
+            }
+            .info-value { font-size: 1.1rem; }
+        }
+
+        /* ─── Section titles ─── */
         .section-title {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary-dark);
             font-weight: 800;
-            font-size: 1.8rem;
-            margin: 20px 0 15px 0;
+            font-size: 1.5rem;
+            margin: 0 0 12px 0;
+        }
+        @media (min-width: 768px) {
+            .section-title { font-size: 1.8rem; margin: 10px 0 15px; }
         }
 
+        /* ─── Facts ─── */
         .facts-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            list-style: none; padding: 0; margin: 0;
+            display: flex; flex-direction: column; gap: 12px;
         }
 
         .facts-list li {
             position: relative;
-            padding-left: 35px;
-            font-size: 1.05rem;
-            line-height: 1.6;
+            padding-left: 30px;
+            font-size: 0.95rem;
+            line-height: 1.65;
             color: var(--text-secondary);
         }
 
         .facts-list li::before {
             content: '✦';
             position: absolute;
-            left: 0;
-            top: 2px;
+            left: 0; top: 1px;
             color: var(--accent);
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
-        /* --- GALLERY --- */
-        .gallery-container {
-            max-width: 1200px;
+        /* ─── Section divider ─── */
+        .section-divider {
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 0 10% 40px 10%; /* Reduced bottom padding slightly */
+            padding: 0 6%;
+        }
+        .section-divider hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border), transparent);
+        }
+
+        /* ═══════════════════════════════════
+           GALLERY
+           ═══════════════════════════════════ */
+        .gallery-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 6%;
         }
 
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            margin-top: 25px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
         }
 
-        .gallery img {
+        @media (min-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .gallery-item img {
             width: 100%;
-            height: 250px;
+            height: 180px;
             object-fit: cover;
-            border-radius: 16px;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            background-color: var(--surface);
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        @media (min-width: 768px) {
+            .gallery-item img { height: 240px; }
         }
 
-        .gallery img:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        .gallery-item:hover img {
+            transform: scale(1.04);
+        }
+        .gallery-item:active img {
+            transform: scale(0.98);
         }
 
-        /* --- VIDEO SECTION --- */
+        /* Expand icon hint */
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.15) 0%, transparent 40%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .gallery-item:hover::after { opacity: 1; }
+
+        /* ═══════════════════════════════════
+           LIGHTBOX
+           ═══════════════════════════════════ */
+        .lightbox {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            touch-action: none;
+            padding: var(--safe-top) 0 var(--safe-bottom);
+        }
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .lightbox img {
+            max-width: 94vw;
+            max-height: 88vh;
+            object-fit: contain;
+            border-radius: 4px;
+            user-select: none;
+            -webkit-user-drag: none;
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: calc(16px + var(--safe-top));
+            right: 16px;
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border: none; border-radius: 50%;
+            color: white; font-size: 20px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+        .lightbox-close:active { transform: scale(0.9); }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,0.12);
+            border: none; border-radius: 50%;
+            color: white; font-size: 22px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+        .lightbox-nav:active { transform: translateY(-50%) scale(0.9); }
+        .lightbox-prev { left: 12px; }
+        .lightbox-next { right: 12px; }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: calc(20px + var(--safe-bottom));
+            left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.6);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Hide nav buttons on mobile (use swipe) */
+        @media (max-width: 767px) {
+            .lightbox-prev, .lightbox-next { display: none; }
+        }
+
+        /* ═══════════════════════════════════
+           VIDEO
+           ═══════════════════════════════════ */
         .video-container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 0 10% 80px 10%;
+            padding: 32px 6% 48px;
         }
 
         .video-wrapper {
             position: relative;
             width: 100%;
-            /* Forces a perfect 16:9 ratio for the video */
-            aspect-ratio: 16 / 9; 
-            border-radius: 20px;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-            background-color: #000;
-            border: 4px solid var(--surface);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            margin-top: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            background-color: #111;
+            border: 3px solid var(--surface);
+            margin-top: 16px;
         }
 
-        .video-wrapper:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        .video-wrapper iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
-        /* --- ERROR STATE --- */
-        #error-state { 
-            display: none; 
-            text-align: center; 
-            padding: 100px 20px; 
+        /* ═══════════════════════════════════
+           ERROR STATE
+           ═══════════════════════════════════ */
+        #error-state {
+            display: none;
+            text-align: center;
+            padding: 120px 24px;
+        }
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .error-back-btn {
+            display: inline-flex;
+            align-items: center; gap: 6px;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .error-back-btn:hover { background: var(--primary-dark); }
+        .error-back-btn:active { transform: scale(0.96); }
+
+        /* ═══════════════════════════════════
+           FOOTER
+           ═══════════════════════════════════ */
+        .site-footer {
+            text-align: center;
+            padding: 32px 6%;
+            padding-bottom: max(32px, var(--safe-bottom));
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        .site-footer .footer-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
         }
 
-        /* --- MOBILE RESPONSIVENESS --- */
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 40px;
-                padding: 40px 6%;
-            }
-            .hero-overlay { padding: 30px 6%; }
-            .back-btn { left: 6%; top: 20px; }
-            .gallery-container { padding: 0 6% 40px 6%; }
-            .video-container { padding: 0 6% 80px 6%; }
-            .main-col { order: 1; }
-            .info-card { order: 2; }
+        /* ═══════════════════════════════════
+           SCROLL REVEAL
+           ═══════════════════════════════════ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: none;
         }
     </style>
 </head>
 <body>
 
+    <a href="index.html" class="back-btn" id="back-btn">← Back to Trail</a>
+
     <div id="main-content" style="display: none;">
         
-        <header class="hero">
-            <a href="index.html" class="back-btn">← Back to Trail</a>
+        <header class="hero" id="hero">
             <img id="dom-img" class="hero-img" src="" alt="Monument">
             <div class="hero-overlay">
-                <div id="dom-location" class="hero-location">Loading Location...</div>
-                <h1 id="dom-title" class="hero-title">Loading...</h1>
+                <div id="dom-location" class="hero-location"></div>
+                <h1 id="dom-title" class="hero-title"></h1>
             </div>
         </header>
 
         <main class="container">
             
             <div class="main-col">
-                <p id="dom-desc" class="description"></p>
+                <p id="dom-desc" class="description reveal"></p>
                 
-                <div>
+                <div class="reveal">
                     <h2 class="section-title">Did you know?</h2>
                     <ul id="dom-facts" class="facts-list"></ul>
                 </div>
             </div>
 
             <aside>
-                <div class="info-card">
+                <div class="info-card reveal">
                     <div class="info-item">
                         <div class="info-label">Built / Established</div>
                         <div id="dom-year" class="info-value"></div>
@@ -331,27 +565,46 @@
             </aside>
         </main>
 
-        <section class="gallery-container">
+        <div class="section-divider"><hr></div>
+
+        <section class="gallery-container reveal">
             <h2 class="section-title">Gallery</h2>
             <div id="dom-gallery" class="gallery"></div>
         </section>
 
-        <section id="video-section" class="video-container" style="display: none;">
+        <div class="section-divider"><hr></div>
+
+        <section id="video-section" class="video-container reveal" style="display: none;">
             <h2 class="section-title">Video Tour</h2>
             <div class="video-wrapper">
-                <iframe id="dom-video" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe id="dom-video" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" title="Video tour"></iframe>
             </div>
         </section>
+
+        <footer class="site-footer">
+            <div class="footer-brand">El Camino</div>
+            <div>La Rábida Explorer</div>
+        </footer>
     </div>
 
     <div id="error-state">
+        <div class="error-icon">🧭</div>
         <h1 class="section-title">Landmark Not Found</h1>
         <p class="description" style="text-align: center;">Sorry, we couldn't find the data for this location.</p>
-        <br>
-        <a href="index.html" class="back-btn" style="position: relative; left: 0; top: 0; border: 1px solid var(--primary); color: var(--primary);">Return to Map</a>
+        <a href="index.html" class="error-back-btn">← Return to Map</a>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lb-close" aria-label="Close lightbox">✕</button>
+        <button class="lightbox-nav lightbox-prev" id="lb-prev" aria-label="Previous image">‹</button>
+        <img id="lb-img" src="" alt="Gallery fullscreen view">
+        <button class="lightbox-nav lightbox-next" id="lb-next" aria-label="Next image">›</button>
+        <div class="lightbox-counter" id="lb-counter"></div>
     </div>
 
     <script>
+        // ═══════ DATA LOADING ═══════
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const monumentId = urlParams.get('id');
@@ -361,6 +614,7 @@
 
             if (!monumentId) {
                 errorState.style.display = 'block';
+                document.getElementById('back-btn').classList.add('scrolled');
                 return;
             }
 
@@ -371,15 +625,19 @@
 
                 if (!data) {
                     errorState.style.display = 'block';
+                    document.getElementById('back-btn').classList.add('scrolled');
                     return;
                 }
 
                 document.title = `${data.name} | La Rábida Explorer`;
                 
+                // Hero image with load handler
+                const heroImg = document.getElementById('dom-img');
                 if (data.mainImage) {
-                    document.getElementById('dom-img').src = data.mainImage;
+                    heroImg.onload = () => heroImg.classList.add('loaded');
+                    heroImg.src = data.mainImage;
                 } else {
-                    document.getElementById('dom-img').style.display = 'none';
+                    heroImg.style.display = 'none';
                 }
 
                 document.getElementById('dom-title').textContent = data.name;
@@ -388,6 +646,7 @@
                 document.getElementById('dom-year').textContent = data.yearBuilt;
                 document.getElementById('dom-architect').textContent = data.architectOrBuilder;
 
+                // Facts
                 const factsUl = document.getElementById('dom-facts');
                 data.interestingFacts.forEach(fact => {
                     const li = document.createElement('li');
@@ -395,36 +654,158 @@
                     factsUl.appendChild(li);
                 });
 
+                // Gallery
                 const galleryDiv = document.getElementById('dom-gallery');
-                data.gallery.forEach(imgUrl => {
+                galleryImages = data.gallery || [];
+                galleryImages.forEach((imgUrl, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.onclick = () => openLightbox(idx);
+
                     const img = document.createElement('img');
                     img.src = imgUrl;
-                    img.alt = `Gallery image of ${data.name}`;
-                    galleryDiv.appendChild(img);
+                    img.alt = `Gallery image ${idx + 1} of ${data.name}`;
+                    img.loading = 'lazy';
+
+                    item.appendChild(img);
+                    galleryDiv.appendChild(item);
                 });
 
-                // --- NEW: Handle Video Logic ---
+                // Video — lazy load with IntersectionObserver
                 const videoSection = document.getElementById('video-section');
-                const videoIframe = document.getElementById('dom-video');
-
-                // Check if the youtubeVideoId exists AND is not empty
                 if (data.youtubeVideoId && data.youtubeVideoId.trim() !== "") {
-                    // Inject the ID securely into the standard YouTube embed link
-                    videoIframe.src = `https://www.youtube.com/embed/${data.youtubeVideoId}`;
-                    videoSection.style.display = 'block'; // Unhide the video section
+                    videoSection.style.display = 'block';
+
+                    const videoObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const iframe = document.getElementById('dom-video');
+                                if (!iframe.src || iframe.src === window.location.href) {
+                                    iframe.src = `https://www.youtube.com/embed/${data.youtubeVideoId}`;
+                                }
+                                videoObserver.unobserve(entry.target);
+                            }
+                        });
+                    }, { rootMargin: '200px' });
+
+                    videoObserver.observe(videoSection);
                 } else {
-                    videoSection.style.display = 'none'; // Keep it hidden if no video exists
+                    videoSection.style.display = 'none';
                 }
 
                 errorState.style.display = 'none';
                 mainContent.style.display = 'block';
 
+                // Init scroll features
+                initScrollReveal();
+                initStickyBackBtn();
+
             } catch (error) {
                 console.error("Error loading monument data:", error);
                 mainContent.style.display = 'none';
                 errorState.style.display = 'block';
+                document.getElementById('back-btn').classList.add('scrolled');
             }
         });
+
+        // ═══════ SCROLL REVEAL ═══════
+        function initScrollReveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+            reveals.forEach(el => observer.observe(el));
+        }
+
+        // ═══════ STICKY BACK BUTTON ═══════
+        function initStickyBackBtn() {
+            const hero = document.getElementById('hero');
+            const btn = document.getElementById('back-btn');
+            if (!hero) return;
+
+            const observer = new IntersectionObserver(([entry]) => {
+                btn.classList.toggle('scrolled', !entry.isIntersecting);
+            }, { threshold: 0 });
+
+            observer.observe(hero);
+        }
+
+        // ═══════ LIGHTBOX ═══════
+        let galleryImages = [];
+        let currentLbIndex = 0;
+        let lbTouchStartX = 0;
+
+        function openLightbox(index) {
+            currentLbIndex = index;
+            const lb = document.getElementById('lightbox');
+            updateLightboxImage();
+            lb.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            lb.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function updateLightboxImage() {
+            const img = document.getElementById('lb-img');
+            img.src = galleryImages[currentLbIndex];
+            document.getElementById('lb-counter').textContent = 
+                `${currentLbIndex + 1} / ${galleryImages.length}`;
+        }
+
+        function lbPrev() {
+            currentLbIndex = (currentLbIndex - 1 + galleryImages.length) % galleryImages.length;
+            updateLightboxImage();
+        }
+
+        function lbNext() {
+            currentLbIndex = (currentLbIndex + 1) % galleryImages.length;
+            updateLightboxImage();
+        }
+
+        // Event listeners
+        document.getElementById('lb-close').addEventListener('click', closeLightbox);
+        document.getElementById('lb-prev').addEventListener('click', lbPrev);
+        document.getElementById('lb-next').addEventListener('click', lbNext);
+
+        // Close on backdrop click
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget || e.target.id === 'lb-img') {
+                // Only close if clicking the backdrop, not the image
+                if (e.target === e.currentTarget) closeLightbox();
+            }
+        });
+
+        // Keyboard nav
+        document.addEventListener('keydown', (e) => {
+            const lb = document.getElementById('lightbox');
+            if (!lb.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') lbPrev();
+            if (e.key === 'ArrowRight') lbNext();
+        });
+
+        // Touch swipe on lightbox
+        document.getElementById('lightbox').addEventListener('touchstart', (e) => {
+            lbTouchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        document.getElementById('lightbox').addEventListener('touchend', (e) => {
+            const deltaX = e.changedTouches[0].clientX - lbTouchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX > 0) lbPrev();
+                else lbNext();
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>

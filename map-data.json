@@ -83,7 +83,7 @@
       "name": "Start of the Path",
       "lat": 37.200864,
       "lng": -6.924522,
-      "img": "images/landmarks-images/maxi-lecture-hall.png",
+      "img": "images/landmarks-images/spot-1.jpeg",
       "desc": "Looking northeast from here, you can see the <span class='monument-link' onclick='triggerLocation(\"lm-1\")'>Maxi-Lecture Hall</span> of the Huelva Campus in the distance.",
       "visibleLandmarks": ["lm-1"],
       "viewCone": [
@@ -97,7 +97,7 @@
       "name": "Estero de Domingo Rubio",
       "lat": 37.205033,
       "lng": -6.931289,
-      "img": "images/landmarks-images/unia.png",
+      "img": "images/landmarks-images/spot-2.jpeg",
       "desc": "Deep in the marshland. Looking east provides a wide view of the <span class='monument-link' onclick='triggerLocation(\"lm-4\")'>UNIA</span> campus grounds across the water. Further along the landscape, you can spot the <span class='monument-link' onclick='triggerLocation(\"lm-2\")'>Monastery of La Rábida</span> and the <span class='monument-link' onclick='triggerLocation(\"lm-7\")'>Monumento a los Descubridores</span>.",
       "visibleLandmarks": ["lm-4", "lm-2", "lm-7"],
       "viewCone": [
@@ -111,7 +111,7 @@
       "name": "Amphitheater Viewpoint",
       "lat": 37.208944,
       "lng": -6.930386,
-      "img": "images/landmarks-images/amphitheater.png",
+      "img": "images/landmarks-images/spot-3.jpeg",
       "desc": "Looking straight across the terrain to the east reveals both the <span class='monument-link' onclick='triggerLocation(\"lm-3\")'>Amphitheater</span> and the historic <span class='monument-link' onclick='triggerLocation(\"lm-2\")'>Monastery of La Rábida</span>.",
       "visibleLandmarks": ["lm-2", "lm-3"],
       "viewCone": [

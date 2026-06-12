@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Camino - La Rabida Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Explore the historic La Rábida trail — discover monuments, viewpoints, and the story of Columbus's journey.">
+    <meta name="theme-color" content="#2b402d">
+    <title>El Camino — La Rábida Explorer</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +25,10 @@
             --text: #2c2c2c;
             --text-secondary: #5a5a5a;
             --ease: cubic-bezier(0.32, 0.72, 0, 1);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,6 +39,7 @@
             overflow: hidden; color: var(--text);
             background: #f4ebd8;
             -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* ─────── MAP ─────── */
@@ -41,27 +48,52 @@
         /* ─────── FLOATING HEADER ─────── */
         .app-header {
             position: absolute;
-            top: 16px; left: 16px; right: 16px;
+            top: calc(12px + var(--safe-top));
+            left: calc(12px + var(--safe-left));
+            right: auto;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 12px 18px;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
-            display: flex; align-items: center; justify-content: space-between;
-            max-width: 400px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px) saturate(1.8);
+            -webkit-backdrop-filter: blur(16px) saturate(1.8);
+            padding: 10px 16px;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.6);
+            display: flex; align-items: center; gap: 10px;
+            max-width: 260px;
+            transition: opacity 0.3s ease;
         }
-        @media (min-width: 768px) { .app-header { left: 24px; top: 24px; } }
-        
+        .app-header .header-icon {
+            width: 32px; height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .app-header .header-icon svg {
+            width: 18px; height: 18px; fill: white;
+        }
         .app-header h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.25rem; font-weight: 800;
+            font-size: 1.05rem; font-weight: 800;
             color: var(--primary-dark); letter-spacing: -0.02em;
+            line-height: 1.2;
         }
         .app-header p {
-            font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;
-            margin-top: 2px;
+            font-size: 0.65rem; color: var(--text-secondary); font-weight: 500;
+            margin-top: 1px; letter-spacing: 0.02em;
+        }
+
+        @media (min-width: 768px) {
+            .app-header {
+                top: calc(24px + var(--safe-top));
+                left: calc(24px + var(--safe-left));
+                padding: 12px 18px;
+                max-width: 280px;
+            }
+        }
+        @media (max-width: 374px) {
+            .app-header { padding: 8px 12px; max-width: 220px; }
+            .app-header h1 { font-size: 0.95rem; }
         }
 
         /* ─────── BOTTOM SHEET ─────── */
@@ -69,137 +101,215 @@
             position: absolute;
             bottom: 0; left: 0; right: 0;
             background: var(--surface);
-            border-radius: 24px 24px 0 0;
-            box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.18);
             z-index: 1000;
             transform: translateY(105%);
-            transition: transform 0.5s var(--ease);
+            transition: transform 0.45s var(--ease);
             display: flex; flex-direction: column;
-            max-height: 85dvh;
+            max-height: 75dvh;
+            padding-bottom: var(--safe-bottom);
+            will-change: transform;
         }
         #bottom-sheet.active {
             transform: translateY(0);
         }
+        #bottom-sheet.dragging {
+            transition: none;
+        }
 
         @media (min-width: 768px) {
             #bottom-sheet {
-                left: 24px; bottom: 24px;
-                width: 400px; right: auto;
+                left: calc(24px + var(--safe-left));
+                bottom: calc(24px + var(--safe-bottom));
+                width: 380px; right: auto;
                 border-radius: 20px;
                 max-height: calc(100dvh - 120px);
+                padding-bottom: 0;
+                box-shadow: 0 8px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04);
             }
         }
 
+        .drag-handle {
+            display: flex; align-items: center; justify-content: center;
+            padding: 12px 0 4px;
+            cursor: grab;
+            touch-action: none;
+        }
+        .drag-handle:active { cursor: grabbing; }
         .drag-indicator {
-            width: 40px; height: 5px;
+            width: 36px; height: 4px;
             background: #d1d5db;
             border-radius: 10px;
-            margin: 12px auto 0;
         }
-        @media (min-width: 768px) { .drag-indicator { display: none; } }
+        @media (min-width: 768px) { .drag-handle { display: none; } }
 
         .sheet-content {
             overflow-y: auto;
-            padding-bottom: 24px;
+            padding-bottom: 20px;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
-        .sheet-content::-webkit-scrollbar { width: 4px; }
-        .sheet-content::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .sheet-content::-webkit-scrollbar { width: 0; display: none; }
 
+        /* ─── Detail Image ─── */
         .detail-img-wrap {
             position: relative;
-            margin: 16px 16px 0;
-            border-radius: 16px;
+            margin: 8px 14px 0;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, #e9edc9 0%, #f4ebd8 100%);
+            min-height: 170px;
         }
         .detail-img-wrap img {
             width: 100%; height: 180px; object-fit: cover;
             display: block;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .detail-img-wrap img.loaded {
+            opacity: 1;
+        }
+
+        /* Shimmer skeleton */
+        .detail-img-wrap::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .detail-img-wrap.loaded::before { opacity: 0; }
+
+        @keyframes shimmer {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
         }
 
         .close-btn {
-            position: absolute; top: 12px; right: 12px;
-            border: none; background: rgba(0,0,0,0.5);
+            position: absolute; top: 10px; right: 10px;
+            border: none; background: rgba(0,0,0,0.45);
             backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            color: white; width: 32px; height: 32px; border-radius: 50%; 
-            cursor: pointer; z-index: 10; display: flex; 
-            align-items: center; justify-content: center; 
-            transition: background 0.2s;
+            color: white; width: 44px; height: 44px; border-radius: 50%;
+            cursor: pointer; z-index: 10; display: flex;
+            align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.15s;
+            font-size: 16px;
         }
-        .close-btn:hover { background: rgba(0,0,0,0.8); }
+        .close-btn:hover { background: rgba(0,0,0,0.7); }
+        .close-btn:active { transform: scale(0.9); background: rgba(0,0,0,0.8); }
 
-        .detail-body { padding: 16px 20px; }
+        /* ─── Detail Body ─── */
+        .detail-body { padding: 14px 18px 0; }
         .detail-body .detail-type {
             font-family: 'Montserrat', sans-serif;
             color: var(--accent); font-weight: 700;
-            font-size: 0.7rem; text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-size: 0.65rem; text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
         .detail-body h3 {
             font-family: 'Montserrat', sans-serif;
-            margin: 6px 0 10px; font-size: 1.4rem;
+            margin: 5px 0 8px; font-size: 1.25rem;
             line-height: 1.2; font-weight: 800; color: var(--primary-dark);
         }
         .detail-body .detail-desc {
-            font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;
+            font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65;
         }
-        
-        /* --- NEW BUTTON CSS --- */
+
+        /* Staggered entrance */
+        .sheet-content .detail-type,
+        .sheet-content h3,
+        .sheet-content .detail-desc,
+        .sheet-content .visit-btn {
+            opacity: 0; transform: translateY(8px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+        #bottom-sheet.active .detail-type   { opacity: 1; transform: none; transition-delay: 0.15s; }
+        #bottom-sheet.active h3             { opacity: 1; transform: none; transition-delay: 0.2s; }
+        #bottom-sheet.active .detail-desc   { opacity: 1; transform: none; transition-delay: 0.25s; }
+        #bottom-sheet.active .visit-btn     { opacity: 1; transform: none; transition-delay: 0.3s; }
+
+        /* ─── Visit Button ─── */
         .visit-btn {
             display: block;
             width: 100%;
-            margin-top: 18px;
-            padding: 12px 0;
-            background-color: var(--primary);
+            margin-top: 16px;
+            padding: 14px 0;
+            background: var(--primary);
             color: white;
             text-align: center;
             text-decoration: none;
             border-radius: 12px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
             transition: all 0.2s var(--ease);
-            box-shadow: 0 4px 12px rgba(61, 90, 64, 0.2);
+            box-shadow: 0 4px 14px rgba(61, 90, 64, 0.25);
+            -webkit-tap-highlight-color: transparent;
         }
-
         .visit-btn:hover {
-            background-color: var(--primary-dark);
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(61, 90, 64, 0.3);
+            box-shadow: 0 6px 20px rgba(61, 90, 64, 0.35);
+        }
+        .visit-btn:active {
+            transform: scale(0.97) translateY(0);
+            box-shadow: 0 2px 8px rgba(61, 90, 64, 0.2);
         }
 
         .monument-link {
             color: var(--primary);
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            border-bottom: 2px solid var(--accent);
+            border-bottom: 1.5px solid var(--accent);
             transition: background 0.2s;
+            padding: 0 2px;
         }
-        .monument-link:hover {
+        .monument-link:hover, .monument-link:active {
             background: var(--accent-soft);
+            border-radius: 2px;
         }
 
         /* ─────── MAP UI & ICONS ─────── */
-        .leaflet-control-zoom { 
-            border-radius: 12px !important; overflow: hidden; border: none !important; 
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important; 
-            margin-right: 16px !important; margin-top: 16px !important;
+        .leaflet-control-zoom {
+            border-radius: 12px !important; overflow: hidden; border: none !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.12) !important;
+            margin-right: calc(12px + var(--safe-right)) !important;
+            margin-top: calc(12px + var(--safe-top)) !important;
         }
         .leaflet-control-zoom a {
-            width: 38px !important; height: 38px !important;
-            line-height: 38px !important; border: 1px solid #f3f4f6 !important;
-            color: var(--text) !important; font-size: 16px !important;
+            width: 42px !important; height: 42px !important;
+            line-height: 42px !important; border: none !important;
+            color: var(--text) !important; font-size: 17px !important;
+            background: rgba(255,255,255,0.9) !important;
         }
+        .leaflet-control-zoom a:first-child {
+            border-bottom: 1px solid #eee !important;
+        }
+
+        /* Attribution – tuck it away */
+        .leaflet-control-attribution {
+            font-size: 9px !important;
+            background: rgba(255,255,255,0.5) !important;
+            backdrop-filter: blur(4px) !important;
+            padding: 2px 6px !important;
+            border-radius: 6px 0 0 0 !important;
+        }
+        .leaflet-control-attribution a { color: var(--text-secondary) !important; }
 
         .custom-pin {
             color: var(--primary);
-            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.4));
-            transition: transform 0.2s;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+            transition: transform 0.25s var(--ease);
             transform-origin: bottom center;
             cursor: pointer;
         }
         .custom-pin:hover {
-            transform: scale(1.15) translateY(-4px);
+            transform: scale(1.2) translateY(-4px);
         }
         .custom-pin svg {
             width: 100%; height: 100%;
@@ -224,10 +334,11 @@
             border-radius: 20px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 0.75rem;
-            padding: 6px 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-size: 0.7rem;
+            padding: 5px 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
             text-shadow: none;
+            white-space: nowrap;
         }
         .you-are-here-label::before {
             border-top-color: var(--primary-dark);
@@ -236,7 +347,10 @@
 </head>
 <body>
 
-<div class="app-header">
+<div class="app-header" id="app-header">
+    <div class="header-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+    </div>
     <div>
         <h1>El Camino</h1>
         <p>La Rábida Explorer</p>
@@ -246,19 +360,19 @@
 <div id="map" aria-label="La Rabida route map"></div>
 
 <div id="bottom-sheet">
-    <div class="drag-indicator"></div>
-    <div class="sheet-content">
-        <div class="detail-img-wrap">
-            <button class="close-btn" onclick="hideDetails()" aria-label="Close">&#10005;</button>
+    <div class="drag-handle" id="drag-handle">
+        <div class="drag-indicator"></div>
+    </div>
+    <div class="sheet-content" id="sheet-content">
+        <div class="detail-img-wrap" id="img-wrap">
+            <button class="close-btn" onclick="hideDetails()" aria-label="Close">✕</button>
             <img id="d-img" alt="Location image">
         </div>
         <div class="detail-body">
             <div id="d-type" class="detail-type"></div>
             <h3 id="d-title"></h3>
             <div id="d-desc" class="detail-desc"></div>
-            
-            <!-- NEW VISIT PAGE BUTTON -->
-            <a href="#" id="d-visit-btn" class="visit-btn">Visit Monument Page</a>
+            <a href="#" id="d-visit-btn" class="visit-btn">Visit Monument Page →</a>
         </div>
     </div>
 </div>
@@ -284,11 +398,11 @@
     document.addEventListener('DOMContentLoaded', () => {
         initMap();
         loadMapData();
+        initDragDismiss();
         window.addEventListener('hashchange', checkURLHash);
     });
 
     function initMap() {
-        // We start with a generic center, but it will be instantly overwritten by the auto-framer
         map = L.map('map', { zoomControl: false }).setView([37.208, -6.922], 15);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19, attribution: 'Tiles &copy; Esri'
@@ -306,7 +420,6 @@
             drawLandmarks(mapData.landmarks);
             drawStops(mapData.stops);
             
-            // Frame the entire map perfectly on initial load
             const allLatLngs = [
                 ...mapData.route, 
                 ...mapData.landmarks.map(l => [l.lat, l.lng])
@@ -315,13 +428,12 @@
             if (allLatLngs.length > 0) {
                 const mapBounds = L.latLngBounds(allLatLngs);
                 map.fitBounds(mapBounds, {
-                    paddingTopLeft: [20, 90], // Clears the floating header
+                    paddingTopLeft: [20, 90],
                     paddingBottomRight: [20, 20],
                     maxZoom: 16
                 });
             }
 
-            // Only override the global view if a specific QR code/URL is requested
             checkURLHash();
         } catch (error) {
             console.error("Map data failed to load", error);
@@ -357,8 +469,8 @@
             const icon = L.divIcon({ 
                 className: 'custom-pin', 
                 html: pinSvg, 
-                iconSize: [36, 36], 
-                iconAnchor: [18, 34] 
+                iconSize: [42, 42], 
+                iconAnchor: [21, 40] 
             });
             const marker = L.marker([stop.lat, stop.lng], { icon: icon }).addTo(map);
             marker.on('click', () => selectLocation(stop));
@@ -407,7 +519,7 @@
         const isStop = !!item.viewCone;
         const isMobile = window.innerWidth < 768;
 
-        // Auto-framing: Ensure the camera keeps both the origin and the target landmarks in view
+        // Auto-framing
         let bounds = L.latLngBounds([item.lat, item.lng]);
 
         if (isStop) {
@@ -428,9 +540,8 @@
             bounds.extend([item.lat - pad, item.lng - pad]);
         }
 
-        // Apply screen padding so the UI does not block the geometry
-        const padTL = isMobile ? [20, 90] : [440, 90]; 
-        const padBR = isMobile ? [20, window.innerHeight * 0.45] : [40, 40]; 
+        const padTL = isMobile ? [20, 80] : [420, 90]; 
+        const padBR = isMobile ? [20, window.innerHeight * 0.42] : [40, 40]; 
 
         map.flyToBounds(bounds, {
             paddingTopLeft: padTL,
@@ -443,7 +554,7 @@
             window.history.pushState(null, '', '#' + item.id);
         }
 
-        // Draw Cone & Highlight Landmarks
+        // Draw Cone & Highlight
         if (isStop) {
             if (item.viewCone) {
                 viewConeLayer = drawFadedCone(item.viewCone);
@@ -453,7 +564,6 @@
                 item.visibleLandmarks.forEach(targetId => {
                     if (markersMap[targetId]) {
                         markersMap[targetId].layer.setStyle(activeLandmarkStyle);
-                        // Force the active landmark to the top layer so it can be clicked easily
                         markersMap[targetId].layer.bringToFront();
                     }
                 });
@@ -463,27 +573,45 @@
                 permanent: true,
                 direction: 'top',
                 className: 'you-are-here-label',
-                offset: [0, -32] 
+                offset: [0, -36] 
             })
             .setLatLng([item.lat, item.lng])
             .setContent("📍 You are here")
             .addTo(map);
         }
 
-        document.getElementById('bottom-sheet').classList.add('active');
+        // Update sheet UI
+        const sheet = document.getElementById('bottom-sheet');
+        const imgEl = document.getElementById('d-img');
+        const imgWrap = document.getElementById('img-wrap');
+
+        // Reset image loading state
+        imgEl.classList.remove('loaded');
+        imgWrap.classList.remove('loaded');
+
+        imgEl.onload = () => {
+            imgEl.classList.add('loaded');
+            imgWrap.classList.add('loaded');
+        };
+        imgEl.onerror = () => {
+            imgWrap.classList.add('loaded');
+        };
+
+        sheet.classList.add('active');
         document.getElementById('d-type').textContent = isStop ? 'Viewpoint' : 'Landmark';
         document.getElementById('d-title').textContent = item.name;
         document.getElementById('d-desc').innerHTML = item.desc;
-        document.getElementById('d-img').src = item.img || 'https://via.placeholder.com/400x200?text=Image+Not+Found';
+        imgEl.src = item.img || '';
 
-        // --- NEW BUTTON LOGIC ---
+        // Scroll sheet content to top
+        document.getElementById('sheet-content').scrollTop = 0;
+
+        // Visit button logic
         const visitBtn = document.getElementById('d-visit-btn');
         if (!isStop && item.id) {
-            // Display button and link to our dynamic monument page
             visitBtn.href = `monument.html?id=${item.id}`;
             visitBtn.style.display = 'block';
         } else {
-            // Hide the button if it's just a viewpoint/stop
             visitBtn.style.display = 'none';
         }
     }
@@ -503,6 +631,40 @@
         });
 
         window.history.pushState(null, '', window.location.pathname);
+    }
+
+    // ─── Touch Drag to Dismiss ───
+    function initDragDismiss() {
+        const sheet = document.getElementById('bottom-sheet');
+        const handle = document.getElementById('drag-handle');
+        let startY = 0, currentY = 0, isDragging = false;
+
+        handle.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            sheet.classList.add('dragging');
+        }, { passive: true });
+
+        handle.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentY = e.touches[0].clientY;
+            const deltaY = Math.max(0, currentY - startY);
+            sheet.style.transform = `translateY(${deltaY}px)`;
+        }, { passive: true });
+
+        handle.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            sheet.classList.remove('dragging');
+            sheet.style.transform = '';
+            const deltaY = currentY - startY;
+            if (deltaY > 100) {
+                hideDetails();
+            } else {
+                sheet.classList.add('active');
+            }
+            currentY = 0;
+        });
     }
 </script>
 </body>
